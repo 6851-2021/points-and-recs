@@ -47,6 +47,9 @@ class Graphics {
     }
 
     // draw the additional points as red
+    for (const point of this.store.addedPoints) {
+      this.drawPoint(point, "#cc0000");
+    }
   }
 }
 
