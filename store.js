@@ -11,6 +11,7 @@ class Store {
     // list of points to be drawn as Point objects
     this.points = [];
     this.addedPoints = [];
+    this.violatingPoints = [];
 
     this.mouseX = 0;
     this.mouseY = 0;
@@ -34,6 +35,7 @@ class Store {
 
     // clear added points when we add a new point
     this.addedPoints = [];
+    this.violatingPoints = [];
   }
 
   computeSuperset() {
@@ -44,16 +46,18 @@ class Store {
 
   computeCheck() {
     let all_points = this.points.concat(this.addedPoints);
-    let violating_pairs = getViolatingPoints(all_points);
+    this.violatingPoints = getViolatingPoints(all_points);
     let notif_string;
-    if (violating_pairs.length === 0) {
+    if (this.violatingPoints.length === 0) {
       notif_string = "satisfied!";  
     } else {
-      notif_string = "following pairs of points are violating: " +
-                     JSON.stringify(violating_pairs);
+      let string_arr = this.violatingPoints.map(a => 
+                       "(" + a[0].x + ", " + a[0].y + ") | (" + a[1].x + ", " + a[1].y + ")");
+      notif_string = "following pairs of points are violating: <br>" +
+                      string_arr.join(" <br>");
     }
-    window.alert(notif_string);
-    
+    document.getElementById("checkResult").innerHTML = notif_string;
+ 
   }
 
 }

@@ -51,6 +51,7 @@ class Graphics {
     this.canvasCtx.stroke();
     this.canvasCtx.restore();
   }
+  
   draw() {
     this.drawGrid();
 
@@ -59,10 +60,17 @@ class Graphics {
       this.drawPoint(point, "#888888");
     }
 
-    // draw the additional points as red
+    // draw the additional points as green
     for (const point of this.store.addedPoints) {
-      this.drawPoint(point, "#cc0000");
+      this.drawPoint(point, "#00ff00");
     }
+
+    // draw the violating points as pairs of colors
+    // can be overwritten if a point is part of multiple pairs
+    for (const [point_a, point_b] of this.store.violatingPoints) {
+      this.drawPoint(point_a, "#800000");
+      this.drawPoint(point_b, "#800000");
+    }    
   }
 }
 
