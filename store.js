@@ -1,6 +1,8 @@
+const STEP = 100;
+
 class Store {
   constructor() {
-    // list of points to be drawn (how do we store them?)
+    // list of points to be drawn as {x, y}
     this.points = [];
 
     this.mouseX = 0;
@@ -10,8 +12,13 @@ class Store {
   }
   updateClick() {
     this.activeClick = true;
-    // add a point at coords specified by this.mouseX, this.mouseY?
-    console.log(this.mouseX, this.mouseY);
+
+    // this is bad; should probably have a STEP / 2 somewhere
+    const x = Math.floor(this.mouseX / STEP);
+    const y = Math.floor(this.mouseY / STEP);
+
+    // if the point {x, y} exists, we should do something else
+    this.points.push({x, y});
   }
 }
 
