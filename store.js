@@ -1,4 +1,5 @@
 import { NLogNAlgo } from "./algo/nlogn.js";
+import { getViolatingPoints } from "./algo/Check.js";
 import { Point } from "./Point.js";
 
 // this shouldn't be duplicated between files...
@@ -32,8 +33,9 @@ class Store {
     // clear added points when we add a new point
     this.addedPoints = [];
   }
-  
+
   computeSuperset() {
+    console.log(getViolatingPoints(this.points));
     NLogNAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
