@@ -1,4 +1,6 @@
-// points is a list of unique {x, y}
+import { Point } from "../Point.js";
+
+// points is a list of unique Points
 // Returns a list of points to add
 // Based on D&C
 function NLogNAlgo(points) {
@@ -37,7 +39,7 @@ function dnc(points) {
         // Skip over points with the same y to avoid duplicates
         if (pl < pr && points[pl].y === newY) ++pl;
         // Otherwise we should add this point
-        else r.push({x: points[p].x, newY});
+        else r.push(new Point(points[p].x, newY));
         y.push(newY);
         lastY = newY;
     }

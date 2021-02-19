@@ -1,3 +1,6 @@
+import { Point } from "./Point.js";
+
+
 const STEP = 100;
 const RADIUS = STEP / 4;
 
@@ -36,7 +39,8 @@ class Graphics {
 
     this.canvasCtx.restore();
   }
-  drawPoint({x, y}, color) {
+  drawPoint(point, color) {
+    let [x, y] = [point.x, point.y];
     this.canvasCtx.save();
     this.canvasCtx.beginPath();
     this.canvasCtx.arc(STEP * x, STEP * y, RADIUS, 0, 2 * Math.PI);
