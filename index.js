@@ -1,8 +1,7 @@
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
+import { STEP, CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants.js";
 
-const CANVAS_WIDTH = 1000;
-const CANVAS_HEIGHT = 600;
 
 class PointsAndRecs {
   constructor(canvasCtx) {
@@ -30,8 +29,11 @@ class PointsAndRecs {
     this.store.activeClick = null;
   }
   onMouseMove(e) {
-    this.store.mouseX = e.offsetX;
-    this.store.mouseY = e.offsetY;
+    const x = Math.floor(e.offsetX / STEP + 0.5);
+    const y = Math.floor(e.offsetY / STEP + 0.5);
+
+    this.store.mouseX = x;
+    this.store.mouseY = y;
   }
   start() {
     this.startUpdateLoop();

@@ -1,9 +1,7 @@
 import { NLogNAlgo } from "./algo/nlogn.js";
 import { getViolatingPoints } from "./algo/Check.js";
 import { Point } from "./Point.js";
-
-// this shouldn't be duplicated between files...
-const STEP = 100;
+import { STEP } from "./constants.js";
 
 class Store {
 
@@ -27,17 +25,14 @@ class Store {
   updateClick() {
     this.activeClick = true;
 
-    const x = Math.floor(this.mouseX / STEP + 0.5);
-    const y = Math.floor(this.mouseY / STEP + 0.5);
-
     // Try to find point
-    const p = this.points.find(p => p.x === x && p.y === y);
+    const p = this.points.find(p => p.x === this.mouseX && p.y === this.mouseY);
     // Remove it if it exists
     if (p)
       this.points.splice(this.points.indexOf(p), 1);
     // Add it if it doesn't
     else
-      this.points.push(new Point(x, y));
+      this.points.push(new Point(this.mouseX, this.mouseY));
 
     // clear added points when we add a new point
     this.addedPoints = [];

@@ -1,8 +1,12 @@
 import { Point } from "./Point.js";
+import {
+  STEP,
+  RADIUS,
+  STORE_POINT_COLOR,
+  ADDED_POINT_COLOR,
+  VIOLATING_POINT_COLOR,
+} from "./constants.js";
 
-
-const STEP = 100;
-const RADIUS = STEP / 4;
 
 class Graphics {
   constructor(canvasCtx, store) {
@@ -55,21 +59,27 @@ class Graphics {
   draw() {
     this.drawGrid();
 
-    // draw the store's points as black
+    // draw the intersection hovered over with lower opacity
+    this.drawPoint(
+      new Point(this.store.mouseX, this.store.mouseY),
+      `${STORE_POINT_COLOR}80`
+    );
+
+  // draw the store's points
     for (const point of this.store.points) {
-      this.drawPoint(point, "#888888");
+      this.drawPoint(point, STORE_POINT_COLOR);
     }
 
-    // draw the additional points as green
+    // draw the additional points
     for (const point of this.store.addedPoints) {
-      this.drawPoint(point, "#00ff00");
+      this.drawPoint(point, ADDED_POINT_COLOR);
     }
 
     // draw the violating points as pairs of colors
     // can be overwritten if a point is part of multiple pairs
     for (const [point_a, point_b] of this.store.violatingPoints) {
-      this.drawPoint(point_a, "#800000");
-      this.drawPoint(point_b, "#800000");
+      this.drawPoint(point_a, VIOLATING_POINT_COLOR);
+      this.drawPoint(point_b, VIOLATING_POINT_COLOR);
     }    
   }
 }
