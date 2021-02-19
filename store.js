@@ -19,7 +19,9 @@ class Store {
 
     const b = document.getElementById("superset");
     b.addEventListener("click", (e) => this.computeSuperset());
-  }
+
+    const c = document.getElementById("check");
+    c.addEventListener("click", (e) => this.computeCheck());  }
 
   updateClick() {
     this.activeClick = true;
@@ -35,11 +37,25 @@ class Store {
   }
 
   computeSuperset() {
-    console.log(getViolatingPoints(this.points));
     NLogNAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
   }
+
+  computeCheck() {
+    let all_points = this.points.concat(this.addedPoints);
+    let violating_pairs = getViolatingPoints(all_points);
+    let notif_string;
+    if (violating_pairs.length === 0) {
+      notif_string = "satisfied!";  
+    } else {
+      notif_string = "following pairs of points are violating: " +
+                     JSON.stringify(violating_pairs);
+    }
+    window.alert(notif_string);
+    
+  }
+
 }
 
 export { Store };
