@@ -14,5 +14,5 @@ Next steps for the web app side:
 
 For the algorithms side:
 
-- Write up an algorithm for determining if a set of points is satisfied, and if not, give an offending pair of points?
+- ~~Write up an algorithm for determining if a set of points is satisfied, and if not, give an offending pair of points?~~ (offending pairs listed)
 - ~~Write up an algorithm for finding a satisfied superset of points~~ (done!)
