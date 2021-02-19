@@ -30,8 +30,14 @@ class Store {
     const x = Math.floor(this.mouseX / STEP + 0.5);
     const y = Math.floor(this.mouseY / STEP + 0.5);
 
-    // if the point {x, y} exists, we should do something other than adding it
-    this.points.push(new Point(x, y));
+    // Try to find point
+    const p = this.points.find(p => p.x === x && p.y === y);
+    // Remove it if it exists
+    if (p)
+      this.points.splice(this.points.indexOf(p), 1);
+    // Add it if it doesn't
+    else
+      this.points.push(new Point(x, y));
 
     // clear added points when we add a new point
     this.addedPoints = [];
