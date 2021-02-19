@@ -60,12 +60,16 @@ class Graphics {
     this.drawGrid();
 
     // draw the intersection hovered over with lower opacity
+    const color = document.getElementById("add-grid-point").checked
+      ? STORE_POINT_COLOR
+      : ADDED_POINT_COLOR;
+
     this.drawPoint(
       new Point(this.store.mouseX, this.store.mouseY),
-      `${STORE_POINT_COLOR}80`
+      `${color}80`
     );
 
-  // draw the store's points
+    // draw the store's points
     for (const point of this.store.points) {
       this.drawPoint(point, STORE_POINT_COLOR);
     }

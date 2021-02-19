@@ -59,4 +59,10 @@ function init() {
   pointsAndRecs.start();
 }
 
+document.querySelectorAll("input[name='point-type']")?.forEach((elem) => {
+  elem.addEventListener("change", (e) => {
+    elem.checked = e.target.checked;
+  });
+});
+
 init();

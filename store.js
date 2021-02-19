@@ -25,17 +25,31 @@ class Store {
   updateClick() {
     this.activeClick = true;
 
-    // Try to find point
-    const p = this.points.find(p => p.x === this.mouseX && p.y === this.mouseY);
-    // Remove it if it exists
-    if (p)
-      this.points.splice(this.points.indexOf(p), 1);
-    // Add it if it doesn't
-    else
-      this.points.push(new Point(this.mouseX, this.mouseY));
+    const togglePoint = (source) => {
+      // Try to find point
+      const p = source.find(p => p.x === this.mouseX && p.y === this.mouseY);
 
-    // clear added points when we add a new point
-    this.addedPoints = [];
+      // Remove it if it exists
+      if (p)
+        source.splice(this.points.indexOf(p), 1);
+      // Add it if it doesn't
+      else
+        source.push(new Point(this.mouseX, this.mouseY));
+    }
+
+    if (document.getElementById("add-grid-point").checked) {
+      // clear added points when we add a new grid point
+      this.addedPoints = [];
+      togglePoint(this.points);
+    } else {
+      // cannot add a grid point to satisfied set
+      if (this.points.find(p => p.x === this.mouseX && p.y === this.mouseY)) {
+        return;
+      }
+      togglePoint(this.addedPoints);
+    }
+
+    // clear violating points on any add
     this.violatingPoints = [];
   }
 

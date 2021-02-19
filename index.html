@@ -24,6 +24,24 @@
     <div id="wrapper">
       <button id="superset">compute superset</button>
       <button id="check">check satisfaction</button>
+
+      <input
+        type="radio"
+        id="add-grid-point"
+        name="point-type"
+        value="grid-point"
+        checked
+      />
+      <label for="add-grid-point">construct grid points</label>
+
+      <input
+        type="radio"
+        id="add-satisfied-set"
+        name="point-type"
+        value="satisfied-set"
+      />
+      <label for="add-satisfied-set">construct satisfied set</label>
+
       <canvas id="mainCanvas"></canvas>
       <p id="checkResult"></p>
     </div>
