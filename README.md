@@ -8,11 +8,11 @@ The algorithm side should be mostly independent from the webapp side? Idk
 
 Next steps for the web app side:
 
-- Add points on click
+- ~~Add points on click~~ (done!)
 - Remove points on, say, double click
 - Add a tool to switch to a different set of points (for letting the user, say, construct the satisfied set)
 
 For the algorithms side:
 
 - Write up an algorithm for determining if a set of points is satisfied, and if not, give an offending pair of points?
-- Write up an algorithm for finding a satisfied superset of points?
+- ~~Write up an algorithm for finding a satisfied superset of points~~ (done!)

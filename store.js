@@ -1,5 +1,6 @@
 import { NLogNAlgo } from "./algo/nlogn.js";
 
+// this shouldn't be duplicated between files...
 const STEP = 100;
 
 class Store {
@@ -14,7 +15,7 @@ class Store {
     this.activeClick = null;
 
     const b = document.getElementById("superset");
-    b.addEventListener("click", this.computeSuperset.bind(this));
+    b.addEventListener("click", (e) => this.computeSuperset());
   }
   updateClick() {
     this.activeClick = true;
@@ -28,7 +29,7 @@ class Store {
     // clear added points when we add a new point
     this.addedPoints = [];
   }
-  computeSuperset(e) {
+  computeSuperset() {
     NLogNAlgo(this.points).forEach(({ x, newY }) =>
       this.addedPoints.push({ x, y: newY })
     );
