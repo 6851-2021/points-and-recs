@@ -13,6 +13,14 @@ class Graphics {
   drawGrid() {
     // canvas is really low level... this should probably be factored out
     this.canvasCtx.save();
+
+    // draw background
+    this.canvasCtx.beginPath();
+    this.canvasCtx.rect(0, 0, this.width, this.height);
+    this.canvasCtx.fillStyle = "#ffffff";
+    this.canvasCtx.fill();
+
+    // draw grid
     this.canvasCtx.beginPath();
     for (let x = 0; x <= this.width; x += STEP) {
       this.canvasCtx.moveTo(x, 0);
@@ -25,6 +33,7 @@ class Graphics {
     this.canvasCtx.strokeStyle = "#000000";
     this.canvasCtx.lineWidth = 1;
     this.canvasCtx.stroke();
+
     this.canvasCtx.restore();
   }
   drawPoint({x, y}, color) {
