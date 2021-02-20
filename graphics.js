@@ -69,6 +69,12 @@ class Graphics {
   draw() {
     this.drawGrid();
 
+    // draw the hovered point (can be overridden by already added points)
+    this.drawPoint(
+      new Point(this.store.mouseX, this.store.mouseY),
+      "#88888880",
+    );
+
     // draw the store's points as black
     for (const point of this.store.points) {
       this.drawPoint(point, "#888888");

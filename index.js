@@ -1,9 +1,7 @@
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
+import { STEP, CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants.js";
 
-const STEP = 100;
-const CANVAS_WIDTH = 10 * STEP;
-const CANVAS_HEIGHT = 6 * STEP;
 
 class PointsAndRecs {
   constructor(canvasCtx) {
@@ -29,6 +27,10 @@ class PointsAndRecs {
 
     const checkResult = document.getElementById("checkResult");
     const canvas = this.graphics.canvasCtx.canvas;
+
+    canvas.addEventListener("mousemove", (e) =>{
+      this.store.setMousePosition(e.offsetX, e.offsetY);
+    });
 
     canvas.addEventListener("click", (e) => {
       this.store.togglePoint(Math.round(e.offsetX / STEP), Math.round(e.offsetY / STEP));

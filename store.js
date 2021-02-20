@@ -1,6 +1,7 @@
 import { NLogNAlgo } from "./algo/nlogn.js";
 import { getViolatingPoints } from "./algo/Check.js";
 import { Point } from "./Point.js";
+import { STEP } from "./constants.js";
 
 class Store {
 
@@ -9,6 +10,10 @@ class Store {
     this.points = [];
     this.addedPoints = [];
     this.violatingPoints = [];
+
+    // track mouse position to allow hover
+    this.mouseX = 0;
+    this.mouseY = 0; 
 
     this.checkResult = "";
 
@@ -19,6 +24,12 @@ class Store {
       }).filter(p => p);
       this.computeCheck();
     }
+  }
+
+  setMousePosition(x, y) {
+    // snap to nearest grid point
+    this.mouseX = Math.round(x / STEP);
+    this.mouseY = Math.round(y / STEP);
   }
 
   togglePoint(x, y) {
