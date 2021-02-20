@@ -2,9 +2,6 @@ import { NLogNAlgo } from "./algo/nlogn.js";
 import { getViolatingPoints } from "./algo/Check.js";
 import { Point } from "./Point.js";
 
-// this shouldn't be duplicated between files...
-const STEP = 100;
-
 class Store {
 
   constructor() {

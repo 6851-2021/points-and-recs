@@ -8,7 +8,7 @@ const CANVAS_HEIGHT = 6 * STEP;
 class PointsAndRecs {
   constructor(canvasCtx) {
     this.store = new Store();
-    this.graphics = new Graphics(canvasCtx, this.store);
+    this.graphics = new Graphics(canvasCtx, STEP, this.store);
   }
   update() {
     this.graphics.draw();
