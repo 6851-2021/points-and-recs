@@ -39,6 +39,7 @@ class Graphics {
 
     this.canvasCtx.restore();
   }
+
   drawPoint(point, color) {
     let [x, y] = [point.x, point.y];
     this.canvasCtx.save();
@@ -50,6 +51,20 @@ class Graphics {
     this.canvasCtx.lineWidth = 1;
     this.canvasCtx.stroke();
     this.canvasCtx.restore();
+  }
+
+  drawUnsatisfiedPair(point_a, point_b) {
+    this.canvasCtx.save();
+    this.canvasCtx.beginPath();
+    this.canvasCtx.moveTo(STEP * point_a.x, STEP * point_a.y);
+    this.canvasCtx.lineTo(STEP * point_b.x, STEP * point_b.y);
+    this.canvasCtx.strokeStyle = "#800000";
+    this.canvasCtx.lineWidth = 5;
+    this.canvasCtx.setLineDash([15, 15])
+    this.canvasCtx.stroke();
+    this.canvasCtx.restore();
+    this.drawPoint(point_a, "#800000");
+    this.drawPoint(point_b, "#800000");
   }
   
   draw() {
@@ -68,8 +83,7 @@ class Graphics {
     // draw the violating points as pairs of colors
     // can be overwritten if a point is part of multiple pairs
     for (const [point_a, point_b] of this.store.violatingPoints) {
-      this.drawPoint(point_a, "#800000");
-      this.drawPoint(point_b, "#800000");
+      this.drawUnsatisfiedPair(point_a, point_b);
     }    
   }
 }
