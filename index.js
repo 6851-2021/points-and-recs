@@ -47,6 +47,9 @@ class PointsAndRecs {
       this.store.clearPoints();
       checkResult.innerHTML = this.store.checkResult;
     });
+
+    // Set the initial result
+    checkResult.innerHTML = this.store.checkResult;
   }
 }
 
