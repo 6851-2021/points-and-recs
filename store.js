@@ -11,6 +11,14 @@ class Store {
     this.violatingPoints = [];
 
     this.checkResult = "";
+
+    if (document.location.hash && document.location.hash[0] === '#') {
+      this.points = document.location.hash.slice(1).split(',').map(p => {
+        const m = p.trim().match(/\((-?[\d]+);\s*(-?[\d]+)\)/);
+        return m ? new Point(m[1], m[2]) : null;
+      }).filter(p => p);
+      this.computeCheck();
+    }
   }
 
   togglePoint(x, y) {
@@ -26,6 +34,8 @@ class Store {
     // clear added points when we add a new point
     this.addedPoints = [];
     this.violatingPoints = [];
+
+    document.location.hash = '#' + this.points.map(p => `(${p.x};${p.y})`).join(',');
 
     // check violations interactively
     this.computeCheck();
