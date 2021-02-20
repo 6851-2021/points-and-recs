@@ -33,7 +33,7 @@ class PointsAndRecs {
     });
 
     canvas.addEventListener("click", (e) => {
-      this.store.togglePoint(Math.round(e.offsetX / STEP), Math.round(e.offsetY / STEP));
+      this.store.togglePoint();
       checkResult.innerHTML = this.store.checkResult;
     });
 
@@ -51,7 +51,8 @@ class PointsAndRecs {
     });
     document.getElementById("save").addEventListener("click", (e) => {
       this.store.savePoints(document.getElementById("filename").value);
-    })
+    });
+
     const inputFile = document.getElementById("inputFile");
     inputFile.addEventListener("change", (e) => {
       if (inputFile.files && inputFile.files[0]) {

@@ -77,9 +77,12 @@ class Graphics {
     this.drawGrid();
 
     // draw the hovered point at a lower opacity
+    const color = document.getElementById("add-grid-point").checked
+      ? GRID_POINT_COLOR
+      : ADDED_POINT_COLOR;
     this.drawPoint(
       new Point(this.store.mouseX, this.store.mouseY),
-      `${GRID_POINT_COLOR}80`,
+      `${color}80`,
     );
 
     // draw the store's points as black

@@ -32,18 +32,33 @@ class Store {
     this.mouseY = Math.round(y / STEP);
   }
 
-  togglePoint(x, y) {
-    // Try to find point
-    const index = this.points.findIndex(p => p.x === x && p.y === y);
-    // Remove it if it exists
-    if (index !== -1)
-      this.points.splice(index, 1);
-    // Add it if it doesn't
-    else
-      this.points.push(new Point(x, y));
+  togglePoint() {
+    const isPoint = (p) => p.x === this.mouseX && p.y === this.mouseY;
+    
+    const updateSource = (source) => {
+      // Try to find point
+      const index = source.findIndex(isPoint);
+      // Remove it if it exists
+      if (index !== -1)
+        source.splice(index, 1);
+      // Add it if it doesn't
+      else
+        source.push(new Point(this.mouseX, this.mouseY));
+    };
 
-    // clear added points when we add a new point
-    this.addedPoints = [];
+    if (document.getElementById("add-grid-point").checked) {
+      // clear added points when we add a new grid point
+      this.addedPoints = [];
+      updateSource(this.points);
+    } else {
+      // cannot add a grid point to satisfied set
+      if (this.points.find(isPoint)) {
+        return;
+      }
+      updateSource(this.addedPoints);
+    }
+    
+    // clear violating points on any add
     this.violatingPoints = [];
 
     document.location.hash = this.points.map(p => `(${p.x};${p.y})`).join(',');
