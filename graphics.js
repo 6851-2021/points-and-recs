@@ -2,19 +2,17 @@ import { Point } from "./Point.js";
 
 
 class Graphics {
-  constructor(canvasCtx, step, store, rows, cols) {
+  constructor(canvasCtx, store, step, stepX, stepY) {
     this.canvasCtx = canvasCtx;
     this.store = store;
     this.prevFrameTime = performance.now();
 
     this.step = step;
     this.radius = step / 4;
+    this.stepX = stepX;
+    this.stepY = stepY;
     this.width = this.canvasCtx.canvas.clientWidth;
     this.height = this.canvasCtx.canvas.clientHeight;
-    this.rows = rows
-    this.cols = cols
-    this.stepX = this.width / this.cols
-    this.stepY = this.height / this.rows
   }
   drawGrid() {
     // canvas is really low level... this should probably be factored out

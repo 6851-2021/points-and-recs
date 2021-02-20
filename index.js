@@ -8,9 +8,18 @@ const INITIAL_ROWS = CANVAS_HEIGHT / 100;
 const INITIAL_COLUMNS = CANVAS_WIDTH / 100;
 
 class PointsAndRecs {
-  constructor(canvasCtx, rows, cols) {
+  constructor(canvasCtx, rows, cols, step, stepX, stepY) {
     this.store = new Store();
-    this.graphics = new Graphics(canvasCtx, STEP, this.store, rows, cols);
+    this.step = step;
+    this.stepX = stepX;
+    this.stepY = stepY;
+    this.graphics = new Graphics(
+      canvasCtx,
+      this.store,
+      this.step,
+      this.stepX,
+      this.stepY
+    );
   }
   update() {
     this.graphics.draw();
@@ -33,7 +42,7 @@ class PointsAndRecs {
     const canvas = this.graphics.canvasCtx.canvas;
 
     canvas.addEventListener("click", (e) => {
-      this.store.togglePoint(Math.round(e.offsetX / STEP), Math.round(e.offsetY / STEP));
+      this.store.togglePoint(Math.round(e.offsetX / this.stepX), Math.round(e.offsetY / this.stepY));
       checkResult.innerHTML = this.store.checkResult;
     });
 
@@ -65,7 +74,12 @@ function setup_canvas(width, height) {
 
 function init(rows, cols) {
   const canvasCtx = setup_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-  const pointsAndRecs = new PointsAndRecs(canvasCtx, rows, cols);
+  const width = canvasCtx.canvas.clientWidth;
+  const height = canvasCtx.canvas.clientHeight;
+  const stepX = width / cols
+  const stepY = height / rows
+  const step = Math.min(stepX, stepY)
+  const pointsAndRecs = new PointsAndRecs(canvasCtx, rows, cols, step, stepX, stepY);
   pointsAndRecs.start();
 }
 
