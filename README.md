@@ -1,6 +1,8 @@
 # points-and-recs
 
-You'll need to run this on a server. If you have Python 3 you can run `python3 -m http.server` in the root directory, then open `http://localhost:8000/` in a browser.
+https://6851-2021.github.io/points-and-recs/.
+
+If you want to run this locally, you'll need to run a server. If you have Python 3 you can run `python3 -m http.server` in the root directory, then open `http://localhost:8000/` in a browser. 
 
 This is just the skeleton for now. `store.js` should have the logic for handling points while `graphics.js` should have the logic for drawing them. Graphics should be thought of as a state machine; the entire thing is redrawn every loop and should be based entirely on the state of `store`.
 
