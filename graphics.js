@@ -1,21 +1,20 @@
 import { Point } from "./Point.js";
 
 
-const STEP = 100;
-const RADIUS = STEP / 4;
-
 class Graphics {
-  constructor(canvasCtx, store, rows, cols) {
+  constructor(canvasCtx, step, store, rows, cols) {
     this.canvasCtx = canvasCtx;
     this.store = store;
     this.prevFrameTime = performance.now();
 
+    this.step = step;
+    this.radius = step / 4;
     this.width = this.canvasCtx.canvas.clientWidth;
     this.height = this.canvasCtx.canvas.clientHeight;
     this.rows = rows
     this.cols = cols
-    this.hStep = this.width / this.cols
-    this.vStep = this.height / this.rows
+    this.stepX = this.width / this.cols
+    this.stepY = this.height / this.rows
   }
   drawGrid() {
     // canvas is really low level... this should probably be factored out
@@ -29,11 +28,11 @@ class Graphics {
 
     // draw grid
     this.canvasCtx.beginPath();
-    for (let x = 0; x <= this.width; x += this.hStep) {
+    for (let x = 0; x <= this.width; x += this.stepX) {
       this.canvasCtx.moveTo(x, 0);
       this.canvasCtx.lineTo(x, this.height);
     }
-    for (let y = 0; y <= this.height; y += this.vStep) {
+    for (let y = 0; y <= this.height; y += this.stepY) {
       this.canvasCtx.moveTo(0, y);
       this.canvasCtx.lineTo(this.width, y);
     }
@@ -48,7 +47,7 @@ class Graphics {
     let [x, y] = [point.x, point.y];
     this.canvasCtx.save();
     this.canvasCtx.beginPath();
-    this.canvasCtx.arc(this.hStep * x, this.vStep * y, RADIUS, 0, 2 * Math.PI);
+    this.canvasCtx.arc(this.stepX * x, this.stepY * y, this.radius, 0, 2 * Math.PI);
     this.canvasCtx.fillStyle = color;
     this.canvasCtx.fill();
     this.canvasCtx.strokeStyle = "#000000";
@@ -60,8 +59,8 @@ class Graphics {
   drawUnsatisfiedPair(point_a, point_b) {
     this.canvasCtx.save();
     this.canvasCtx.beginPath();
-    this.canvasCtx.moveTo(this.hStep * point_a.x, this.vStep * point_a.y);
-    this.canvasCtx.lineTo(this.hStep * point_b.x, this.vStep * point_b.y);
+    this.canvasCtx.moveTo(this.stepX * point_a.x, this.stepY * point_a.y);
+    this.canvasCtx.lineTo(this.stepX * point_b.x, this.stepY * point_b.y);
     this.canvasCtx.strokeStyle = "#800000";
     this.canvasCtx.lineWidth = 5;
     this.canvasCtx.setLineDash([15, 15])

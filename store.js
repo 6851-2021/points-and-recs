@@ -2,9 +2,6 @@ import { NLogNAlgo } from "./algo/nlogn.js";
 import { getViolatingPoints } from "./algo/Check.js";
 import { Point } from "./Point.js";
 
-// this shouldn't be duplicated between files...
-const STEP = 100;
-
 class Store {
 
   constructor() {
@@ -13,31 +10,23 @@ class Store {
     this.addedPoints = [];
     this.violatingPoints = [];
 
-    this.mouseX = 0;
-    this.mouseY = 0;
-    this.hoverItem = null;
-    this.activeClick = null;
+    this.checkResult = "";
 
-    const b = document.getElementById("superset");
-    b.addEventListener("click", (e) => this.computeSuperset());
-
-    const c = document.getElementById("check");
-    c.addEventListener("click", (e) => this.computeCheck());
-
-    const d = document.getElementById("clear");
-    d.addEventListener("click", (e) => this.clearPoints());
+    if (document.location.hash && document.location.hash[0] === '#') {
+      this.points = document.location.hash.slice(1).split(',').map(p => {
+        const m = p.trim().match(/\((-?[\d]+);\s*(-?[\d]+)\)/);
+        return m ? new Point(parseInt(m[1]), parseInt(m[2])) : null;
+      }).filter(p => p);
+      this.computeCheck();
+    }
   }
-  updateClick() {
-    this.activeClick = true;
 
-    const x = Math.floor(this.mouseX / STEP + 0.5);
-    const y = Math.floor(this.mouseY / STEP + 0.5);
-
+  togglePoint(x, y) {
     // Try to find point
-    const p = this.points.find(p => p.x === x && p.y === y);
+    const index = this.points.findIndex(p => p.x === x && p.y === y);
     // Remove it if it exists
-    if (p)
-      this.points.splice(this.points.indexOf(p), 1);
+    if (index !== -1)
+      this.points.splice(index, 1);
     // Add it if it doesn't
     else
       this.points.push(new Point(x, y));
@@ -46,18 +35,17 @@ class Store {
     this.addedPoints = [];
     this.violatingPoints = [];
 
-    // check violations interactively
-    this.computeCheck()
+    document.location.hash = this.points.map(p => `(${p.x};${p.y})`).join(',');
 
-    // remove violation/success message if exists
-    document.getElementById("checkResult").innerHTML = "";
+    // check violations interactively
+    this.computeCheck();
   }
 
   computeSuperset() {
     NLogNAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
-    document.getElementById("checkResult").innerHTML = "";
+    this.checkResult = "";
   }
 
   computeCheck() {
@@ -72,14 +60,15 @@ class Store {
       notif_string = "following pairs of points are violating: <br>" +
                       string_arr.join(" <br>");
     }
-    document.getElementById("checkResult").innerHTML = notif_string;
+    this.checkResult = notif_string;
   }
 
   clearPoints() {
     this.points = [];
     this.addedPoints = [];
     this.violatingPoints = [];
-    document.getElementById("checkResult").innerHTML = "";
+    this.checkResult = "";
+    document.location.hash = "";
   }
 }
 
