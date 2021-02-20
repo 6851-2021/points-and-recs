@@ -70,6 +70,22 @@ class Store {
     this.checkResult = "";
     document.location.hash = "";
   }
+
+  savePoints(filename){
+    var dummyLink = document.createElement('a');
+    dummyLink.setAttribute('href', 'data:application/json,' + encodeURIComponent(JSON.stringify(this.points)));
+    dummyLink.setAttribute('download', filename);
+    console.log(dummyLink)
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        dummyLink.dispatchEvent(event);
+    }
+    else {
+        dummyLink.click();
+    }
+  }
+
 }
 
 export { Store };

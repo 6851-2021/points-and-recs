@@ -21,6 +21,15 @@
       canvas {
         text-align: center;
       }
+      #save {
+        float: right;
+      }
+      #filename {
+        float: right;
+      }
+      #inputFile {
+        float: right;
+      }
     </style>
   </head>
 
@@ -37,7 +46,12 @@
       <button id="superset">compute superset</button>
       <button id="check">check satisfaction</button>
       <button id="clear">clear all points</button>
+      <input type="file" id="inputFile" accept="application/JSON">
       <canvas id="mainCanvas"></canvas>
+      <span>
+        <button id="save">Save</button>
+        <input type="text" size="30" id="filename" value="points.json"></input>
+      </span>
       <p id="checkResult"></p>
     </div>
     <script type="module" src="index.js"></script>
