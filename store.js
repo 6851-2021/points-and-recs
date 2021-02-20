@@ -13,32 +13,15 @@ class Store {
     this.addedPoints = [];
     this.violatingPoints = [];
 
-    this.mouseX = 0;
-    this.mouseY = 0;
-    this.hoverItem = null;
-    this.activeClick = null;
-
-    const b = document.getElementById("superset");
-    b.addEventListener("click", (e) => this.computeSuperset());
-
-    const c = document.getElementById("check");
-    c.addEventListener("click", (e) => this.computeCheck());
-
-    const d = document.getElementById("clear");
-    d.addEventListener("click", (e) => this.clearPoints());
+    this.checkResult = "";
   }
 
-  updateClick() {
-    this.activeClick = true;
-
-    const x = Math.floor(this.mouseX / STEP + 0.5);
-    const y = Math.floor(this.mouseY / STEP + 0.5);
-
+  togglePoint(x, y) {
     // Try to find point
-    const p = this.points.find(p => p.x === x && p.y === y);
+    const index = this.points.findIndex(p => p.x === x && p.y === y);
     // Remove it if it exists
-    if (p)
-      this.points.splice(this.points.indexOf(p), 1);
+    if (index !== -1)
+      this.points.splice(index, 1);
     // Add it if it doesn't
     else
       this.points.push(new Point(x, y));
@@ -48,17 +31,14 @@ class Store {
     this.violatingPoints = [];
 
     // check violations interactively
-    this.computeCheck()
-
-    // remove violation/success message if exists
-    document.getElementById("checkResult").innerHTML = "";
+    this.computeCheck();
   }
 
   computeSuperset() {
     NLogNAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
-    document.getElementById("checkResult").innerHTML = "";
+    this.checkResult = "";
   }
 
   computeCheck() {
@@ -73,14 +53,14 @@ class Store {
       notif_string = "following pairs of points are violating: <br>" +
                       string_arr.join(" <br>");
     }
-    document.getElementById("checkResult").innerHTML = notif_string;
+    this.checkResult = notif_string;
   }
 
   clearPoints() {
     this.points = [];
     this.addedPoints = [];
     this.violatingPoints = [];
-    document.getElementById("checkResult").innerHTML = "";
+    this.checkResult = "";
   }
 
 }

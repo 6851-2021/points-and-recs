@@ -1,8 +1,9 @@
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
 
-const CANVAS_WIDTH = 1000;
-const CANVAS_HEIGHT = 600;
+const STEP = 100;
+const CANVAS_WIDTH = 10 * STEP;
+const CANVAS_HEIGHT = 6 * STEP;
 
 class PointsAndRecs {
   constructor(canvasCtx) {
@@ -23,23 +24,29 @@ class PointsAndRecs {
       this.updateLoop();
     });
   }
-  onMouseDown(e) {
-    this.store.updateClick();
-  }
-  onMouseUp(e) {
-    this.store.activeClick = null;
-  }
-  onMouseMove(e) {
-    this.store.mouseX = e.offsetX;
-    this.store.mouseY = e.offsetY;
-  }
   start() {
     this.startUpdateLoop();
 
+    const checkResult = document.getElementById("checkResult");
     const canvas = this.graphics.canvasCtx.canvas;
-    canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
-    canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
-    canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
+
+    canvas.addEventListener("click", (e) => {
+      this.store.togglePoint(Math.round(e.offsetX / STEP), Math.round(e.offsetY / STEP));
+      checkResult.innerHTML = this.store.checkResult;
+    });
+
+    document.getElementById("superset").addEventListener("click", (e) => {
+      this.store.computeSuperset();
+      checkResult.innerHTML = this.store.checkResult;
+    });
+    document.getElementById("check").addEventListener("click", (e) => {
+      this.store.computeCheck();
+      checkResult.innerHTML = this.store.checkResult;
+    });
+    document.getElementById("clear").addEventListener("click", (e) => {
+      this.store.clearPoints();
+      checkResult.innerHTML = this.store.checkResult;
+    });
   }
 }
 
