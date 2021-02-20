@@ -27,7 +27,6 @@ class Store {
     const d = document.getElementById("clear");
     d.addEventListener("click", (e) => this.clearPoints());
   }
-
   updateClick() {
     this.activeClick = true;
 
@@ -82,7 +81,6 @@ class Store {
     this.violatingPoints = [];
     document.getElementById("checkResult").innerHTML = "";
   }
-
 }
 
 export { Store };

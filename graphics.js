@@ -5,13 +5,17 @@ const STEP = 100;
 const RADIUS = STEP / 4;
 
 class Graphics {
-  constructor(canvasCtx, store) {
+  constructor(canvasCtx, store, rows, cols) {
     this.canvasCtx = canvasCtx;
     this.store = store;
     this.prevFrameTime = performance.now();
 
     this.width = this.canvasCtx.canvas.clientWidth;
     this.height = this.canvasCtx.canvas.clientHeight;
+    this.rows = rows
+    this.cols = cols
+    this.hStep = this.width / this.cols
+    this.vStep = this.height / this.rows
   }
   drawGrid() {
     // canvas is really low level... this should probably be factored out
@@ -25,11 +29,11 @@ class Graphics {
 
     // draw grid
     this.canvasCtx.beginPath();
-    for (let x = 0; x <= this.width; x += STEP) {
+    for (let x = 0; x <= this.width; x += this.hStep) {
       this.canvasCtx.moveTo(x, 0);
       this.canvasCtx.lineTo(x, this.height);
     }
-    for (let y = 0; y <= this.height; y += STEP) {
+    for (let y = 0; y <= this.height; y += this.vStep) {
       this.canvasCtx.moveTo(0, y);
       this.canvasCtx.lineTo(this.width, y);
     }
@@ -44,7 +48,7 @@ class Graphics {
     let [x, y] = [point.x, point.y];
     this.canvasCtx.save();
     this.canvasCtx.beginPath();
-    this.canvasCtx.arc(STEP * x, STEP * y, RADIUS, 0, 2 * Math.PI);
+    this.canvasCtx.arc(this.hStep * x, this.vStep * y, RADIUS, 0, 2 * Math.PI);
     this.canvasCtx.fillStyle = color;
     this.canvasCtx.fill();
     this.canvasCtx.strokeStyle = "#000000";
@@ -56,8 +60,8 @@ class Graphics {
   drawUnsatisfiedPair(point_a, point_b) {
     this.canvasCtx.save();
     this.canvasCtx.beginPath();
-    this.canvasCtx.moveTo(STEP * point_a.x, STEP * point_a.y);
-    this.canvasCtx.lineTo(STEP * point_b.x, STEP * point_b.y);
+    this.canvasCtx.moveTo(this.hStep * point_a.x, this.vStep * point_a.y);
+    this.canvasCtx.lineTo(this.hStep * point_b.x, this.vStep * point_b.y);
     this.canvasCtx.strokeStyle = "#800000";
     this.canvasCtx.lineWidth = 5;
     this.canvasCtx.setLineDash([15, 15])
@@ -66,7 +70,7 @@ class Graphics {
     this.drawPoint(point_a, "#800000");
     this.drawPoint(point_b, "#800000");
   }
-  
+
   draw() {
     this.drawGrid();
 
@@ -84,7 +88,7 @@ class Graphics {
     // can be overwritten if a point is part of multiple pairs
     for (const [point_a, point_b] of this.store.violatingPoints) {
       this.drawUnsatisfiedPair(point_a, point_b);
-    }    
+    }
   }
 }
 

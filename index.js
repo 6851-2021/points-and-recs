@@ -3,11 +3,13 @@ import { Graphics } from "./graphics.js";
 
 const CANVAS_WIDTH = 1000;
 const CANVAS_HEIGHT = 600;
+const INITIAL_ROWS = CANVAS_HEIGHT / 100;
+const INITIAL_COLUMNS = CANVAS_WIDTH / 100;
 
 class PointsAndRecs {
-  constructor(canvasCtx) {
+  constructor(canvasCtx, rows, cols) {
     this.store = new Store();
-    this.graphics = new Graphics(canvasCtx, this.store);
+    this.graphics = new Graphics(canvasCtx, this.store, rows, cols);
   }
   update() {
     this.graphics.draw();
@@ -51,10 +53,19 @@ function setup_canvas(width, height) {
   return ctx;
 }
 
-function init() {
+function init(rows, cols) {
   const canvasCtx = setup_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-  const pointsAndRecs = new PointsAndRecs(canvasCtx);
+  const pointsAndRecs = new PointsAndRecs(canvasCtx, rows, cols);
   pointsAndRecs.start();
 }
 
-init();
+init(INITIAL_ROWS, INITIAL_COLUMNS);
+
+const u = document.getElementById("update");
+u.addEventListener("click", (e) => updateGrid());
+
+function updateGrid() {
+  const newRows = document.getElementById("rows").value;
+  const newCols = document.getElementById("cols").value;
+  init(Math.abs(parseInt(newRows)), Math.abs(parseInt(newCols)))
+}
