@@ -22,7 +22,11 @@ class Store {
     b.addEventListener("click", (e) => this.computeSuperset());
 
     const c = document.getElementById("check");
-    c.addEventListener("click", (e) => this.computeCheck());  }
+    c.addEventListener("click", (e) => this.computeCheck());
+
+    const d = document.getElementById("clear");
+    d.addEventListener("click", (e) => this.clearPoints());
+  }
 
   updateClick() {
     this.activeClick = true;
@@ -42,12 +46,16 @@ class Store {
     // clear added points when we add a new point
     this.addedPoints = [];
     this.violatingPoints = [];
+
+    // remove violation/success message if exists
+    document.getElementById("checkResult").innerHTML = "";
   }
 
   computeSuperset() {
     NLogNAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
+    document.getElementById("checkResult").innerHTML = "";
   }
 
   computeCheck() {
@@ -63,7 +71,13 @@ class Store {
                       string_arr.join(" <br>");
     }
     document.getElementById("checkResult").innerHTML = notif_string;
- 
+  }
+
+  clearPoints() {
+    this.points = [];
+    this.addedPoints = [];
+    this.violatingPoints = [];
+    document.getElementById("checkResult").innerHTML = "";
   }
 
 }
