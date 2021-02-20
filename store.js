@@ -47,6 +47,9 @@ class Store {
     this.addedPoints = [];
     this.violatingPoints = [];
 
+    // check violations interactively
+    this.computeCheck()
+
     // remove violation/success message if exists
     document.getElementById("checkResult").innerHTML = "";
   }
@@ -63,9 +66,9 @@ class Store {
     this.violatingPoints = getViolatingPoints(all_points);
     let notif_string;
     if (this.violatingPoints.length === 0) {
-      notif_string = "satisfied!";  
+      notif_string = "satisfied!";
     } else {
-      let string_arr = this.violatingPoints.map(a => 
+      let string_arr = this.violatingPoints.map(a =>
                        "(" + a[0].x + ", " + a[0].y + ") | (" + a[1].x + ", " + a[1].y + ")");
       notif_string = "following pairs of points are violating: <br>" +
                       string_arr.join(" <br>");
