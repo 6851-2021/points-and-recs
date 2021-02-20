@@ -47,6 +47,26 @@ class PointsAndRecs {
       this.store.clearPoints();
       checkResult.innerHTML = this.store.checkResult;
     });
+    document.getElementById("save").addEventListener("click", (e) => {
+      this.store.savePoints(document.getElementById("filename").value);
+    })
+    const inputFile = document.getElementById("inputFile");
+    inputFile.addEventListener("change", (e) => {
+      if (inputFile.files && inputFile.files[0]) {
+        const file = inputFile.files[0];
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          this.store.clearPoints();
+          for(const point of JSON.parse(reader.result)){
+            this.store.togglePoint(point.x, point.y);
+          }
+          document.getElementById("filename").value = file.name
+        };
+        reader.readAsText(file);
+      }
+    })
+
+
   }
 }
 
