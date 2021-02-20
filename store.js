@@ -15,7 +15,7 @@ class Store {
     if (document.location.hash && document.location.hash[0] === '#') {
       this.points = document.location.hash.slice(1).split(',').map(p => {
         const m = p.trim().match(/\((-?[\d]+);\s*(-?[\d]+)\)/);
-        return m ? new Point(m[1], m[2]) : null;
+        return m ? new Point(parseInt(m[1]), parseInt(m[2])) : null;
       }).filter(p => p);
       this.computeCheck();
     }
