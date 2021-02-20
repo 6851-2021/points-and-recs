@@ -12,7 +12,7 @@ Next steps for the web app side:
 
 - ~~Add points on click~~ (done!)
 - ~~Remove points on, say, double click~~ (done)
-- Add a tool to switch to a different set of points (for letting the user, say, construct the satisfied set)
+- ~~Add a tool to switch to a different set of points (for letting the user, say, construct the satisfied set)~~
 
 For the algorithms side:
 
