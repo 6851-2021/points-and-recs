@@ -18,6 +18,8 @@ class Graphics {
     this.radius = step / 4;
     this.width = this.canvasCtx.canvas.clientWidth;
     this.height = this.canvasCtx.canvas.clientHeight;
+    // track mouse position to allow hover
+    this.mouse = null;
   }
   drawGrid() {
     // canvas is really low level... this should probably be factored out
@@ -76,15 +78,6 @@ class Graphics {
   draw() {
     this.drawGrid();
 
-    // draw the hovered point at a lower opacity
-    const color = document.getElementById("add-grid-point").checked
-      ? GRID_POINT_COLOR
-      : ADDED_POINT_COLOR;
-    this.drawPoint(
-      new Point(this.store.mouseX, this.store.mouseY),
-      `${color}80`,
-    );
-
     // draw the store's points as black
     for (const point of this.store.points) {
       this.drawPoint(point, GRID_POINT_COLOR);
@@ -100,6 +93,13 @@ class Graphics {
     for (const [point_a, point_b] of this.store.violatingPoints) {
       this.drawUnsatisfiedPair(point_a, point_b);
     }    
+
+    // draw the hovered point at a lower opacity
+    const color = document.getElementById("add-grid-point").checked
+      ? GRID_POINT_COLOR
+      : ADDED_POINT_COLOR;
+    if (this.mouse)
+      this.drawPoint(this.mouse, `${color}80`);
   }
 }
 

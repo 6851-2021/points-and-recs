@@ -7,8 +7,12 @@ class Point {
 
   }
 
+  equals(other) {
+    return (this.x === other.x) && (this.y === other.y);
+  }
+
   isColinear(other) {
-    return (this.x == other.x) || (this.y == other.y);
+    return (this.x === other.x) || (this.y === other.y);
   }
 
   getCopy() {

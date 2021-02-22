@@ -11,10 +11,6 @@ class Store {
     this.addedPoints = [];
     this.violatingPoints = [];
 
-    // track mouse position to allow hover
-    this.mouseX = 0;
-    this.mouseY = 0; 
-
     this.checkResult = "";
 
     if (document.location.hash && document.location.hash[0] === '#') {
@@ -26,14 +22,8 @@ class Store {
     }
   }
 
-  setMousePosition(x, y) {
-    // snap to nearest grid point
-    this.mouseX = Math.round(x / STEP);
-    this.mouseY = Math.round(y / STEP);
-  }
-
-  togglePoint() {
-    const isPoint = (p) => p.x === this.mouseX && p.y === this.mouseY;
+  togglePoint(point) {
+    const isPoint = (p) => p.equals(point);
     
     const updateSource = (source) => {
       // Try to find point
@@ -43,7 +33,7 @@ class Store {
         source.splice(index, 1);
       // Add it if it doesn't
       else
-        source.push(new Point(this.mouseX, this.mouseY));
+        source.push(new Point(point.x, point.y));
     };
 
     if (document.getElementById("add-grid-point").checked) {
