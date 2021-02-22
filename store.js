@@ -1,6 +1,7 @@
 import { NLogNAlgo } from "./algo/nlogn.js";
 import { getViolatingPoints } from "./algo/Check.js";
 import { Point } from "./Point.js";
+import { STEP } from "./constants.js";
 
 class Store {
 
@@ -13,29 +14,44 @@ class Store {
     this.checkResult = "";
 
     if (document.location.hash && document.location.hash[0] === '#') {
-      this.points = document.location.hash.slice(1).split(',').map(p => {
-        const m = p.trim().match(/\((-?[\d]+);\s*(-?[\d]+)\)/);
+      this.points = document.location.hash.slice(1).split(';').map(p => {
+        const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
         return m ? new Point(parseInt(m[1]), parseInt(m[2])) : null;
       }).filter(p => p);
       this.computeCheck();
     }
   }
 
-  togglePoint(x, y) {
-    // Try to find point
-    const index = this.points.findIndex(p => p.x === x && p.y === y);
-    // Remove it if it exists
-    if (index !== -1)
-      this.points.splice(index, 1);
-    // Add it if it doesn't
-    else
-      this.points.push(new Point(x, y));
+  togglePoint(point) {
+    const isPoint = (p) => p.equals(point);
+    
+    const updateSource = (source) => {
+      // Try to find point
+      const index = source.findIndex(isPoint);
+      // Remove it if it exists
+      if (index !== -1)
+        source.splice(index, 1);
+      // Add it if it doesn't
+      else
+        source.push(new Point(point.x, point.y));
+    };
 
-    // clear added points when we add a new point
-    this.addedPoints = [];
+    if (document.getElementById("add-grid-point").checked) {
+      // clear added points when we add a new grid point
+      this.addedPoints = [];
+      updateSource(this.points);
+    } else {
+      // cannot add a grid point to satisfied set
+      if (this.points.find(isPoint)) {
+        return;
+      }
+      updateSource(this.addedPoints);
+    }
+    
+    // clear violating points on any add
     this.violatingPoints = [];
 
-    document.location.hash = this.points.map(p => `(${p.x};${p.y})`).join(',');
+    document.location.hash = this.points.map(p => `(${p.x},${p.y})`).join(';');
 
     // check violations interactively
     this.computeCheck();
@@ -45,7 +61,7 @@ class Store {
     NLogNAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
-    this.checkResult = "";
+    this.computeCheck();
   }
 
   computeCheck() {

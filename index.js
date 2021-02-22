@@ -1,5 +1,7 @@
+import { Point } from "./Point.js";
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
+import { STEP, CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants.js";
 
 const STEP = 100;
 const CANVAS_WIDTH = 10 * STEP;
@@ -41,8 +43,20 @@ class PointsAndRecs {
     const checkResult = document.getElementById("checkResult");
     const canvas = this.graphics.canvasCtx.canvas;
 
+    function eventPoint(e) {
+      return new Point(Math.round(e.offsetX / STEP),
+                       Math.round(e.offsetY / STEP));
+    }
+
+    canvas.addEventListener("mousemove", (e) => {
+      this.graphics.mouse = eventPoint(e);
+    });
+    canvas.addEventListener("mouseleave", (e) => {
+      this.graphics.mouse = null;
+    });
+
     canvas.addEventListener("click", (e) => {
-      this.store.togglePoint(Math.round(e.offsetX / this.stepX), Math.round(e.offsetY / this.stepY));
+      this.store.togglePoint(eventPoint(e));
       checkResult.innerHTML = this.store.checkResult;
     });
 
@@ -60,7 +74,8 @@ class PointsAndRecs {
     });
     document.getElementById("save").addEventListener("click", (e) => {
       this.store.savePoints(document.getElementById("filename").value);
-    })
+    });
+
     const inputFile = document.getElementById("inputFile");
     inputFile.addEventListener("change", (e) => {
       if (inputFile.files && inputFile.files[0]) {
@@ -69,7 +84,7 @@ class PointsAndRecs {
         reader.onload = ()=>{
           this.store.clearPoints();
           for(const point of JSON.parse(reader.result)){
-            this.store.togglePoint(point.x, point.y);
+            this.store.togglePoint(point);
           }
           document.getElementById("filename").value = file.name
         };
