@@ -38,6 +38,21 @@
       <button id="superset"><i>O</i>(<i>n</i> log <i>n</i>) superset</button>
       <button id="check">check satisfaction</button>
       <button id="clear">clear all points</button>
+      <input
+        type="radio"
+        id="add-grid-point"
+        name="point-type"
+        value="grid-point"
+        checked
+      />
+      <label for="add-grid-point">construct grid points</label>
+      <input
+        type="radio"
+        id="add-satisfied-set"
+        name="point-type"
+        value="satisfied-set"
+      />
+      <label for="add-satisfied-set">construct satisfied set</label>
       <input type="file" id="inputFile" accept="application/JSON">
       <canvas id="mainCanvas"></canvas>
       <span>
