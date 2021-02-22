@@ -4,19 +4,23 @@ import { Point } from "../Point.js";
 // per the given definition (some other point exists in their formed rect.)
 // TODO: optimize (a quadtree or kd tree would make this faster)
 export function checkPairSatisfied(i, j, points) {
-  let lo_x = Math.min(points[i].x, points[j].x);
-  let hi_x = Math.max(points[i].x, points[j].x);
-  let lo_y = Math.min(points[i].y, points[j].y);
-  let hi_y = Math.max(points[i].y, points[j].y);
+  let lo_x = Math.min(points[i][0], points[j][0]);
+  let hi_x = Math.max(points[i][0], points[j][0]);
+  let lo_y = Math.min(points[i][1], points[j][1]);
+  let hi_y = Math.max(points[i][1], points[j][1]);
   for (let k = 0; k < points.length; ++k) {
     if ((i != k) && (j != k)) {
-      let [x, y] = [points[k].x, points[k].y];
+      let [x, y] = points[k];
       if ((lo_x <= x) && (x <= hi_x) && (lo_y <= y) && (y <= hi_y)) {
         return true;
       }
     }
   }
   return false;
+}
+
+const isColinear = ([x1, y1], [x2, y2]) => {
+  return (x1 === x2) || (y1 === y2);
 }
 
 // checks if points are satisfied
@@ -28,7 +32,7 @@ export function getViolatingPoints(points) {
     for (let j = i + 1; j < points.length; ++j) {
       let point_a = points[i];
       let point_b = points[j];
-      if (point_a.isColinear(point_b)) {
+      if (isColinear(point_a, point_b)) {
         continue;
       }
 

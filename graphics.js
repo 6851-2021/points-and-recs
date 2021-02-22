@@ -108,13 +108,11 @@ class Graphics {
     this.unsatGroup.innerHTML = "";
 
     // draw the store's points as black
-    for (const point of this.store.points) {
-      this.drawPoint(point, GRID_POINT_COLOR);
-    }
-
-    // draw the additional points as green
-    for (const point of this.store.addedPoints) {
-      this.drawPoint(point, ADDED_POINT_COLOR);
+    for (const point in this.store.points) {
+      const color = this.store.points[point] === "GRID" 
+        ? GRID_POINT_COLOR
+        : ADDED_POINT_COLOR;
+      this.drawPoint(point, color);
     }
 
     // draw the violating points as pairs of colors

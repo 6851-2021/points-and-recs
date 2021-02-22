@@ -26,8 +26,7 @@ class PointsAndRecs {
       pt.x = e.offsetX;
       pt.y = e.offsetY;
       const transformed = pt.matrixTransform(matrix);
-      return new Point(Math.round(transformed.x / STEP),
-                       Math.round(transformed.y / STEP));
+      return [Math.round(transformed.x / STEP), Math.round(transformed.y / STEP)];
     }
 
     svg.addEventListener("mousemove", (e) => {
@@ -75,7 +74,7 @@ class PointsAndRecs {
         reader.onload = ()=>{
           this.store.clearPoints();
           for(const point of JSON.parse(reader.result)){
-            this.store.togglePoint(point);
+            this.store.togglePoint([point.x, point.y]);
           }
           document.getElementById("filename").value = file.name
         };

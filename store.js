@@ -6,67 +6,68 @@ import { STEP } from "./constants.js";
 class Store {
 
   constructor() {
-    // list of points to be drawn as Point objects
-    this.points = [];
-    this.addedPoints = [];
+    // mapping of x,y coordinates to its Point instance
+    this.points = {};
     this.violatingPoints = [];
 
     this.checkResult = "";
 
     if (document.location.hash && document.location.hash[0] === '#') {
-      this.points = document.location.hash.slice(1).split(';').map(p => {
+      this.points = {};
+      document.location.hash.slice(1).split(';').map(p => {
         const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
-        return m ? new Point(parseInt(m[1]), parseInt(m[2])) : null;
-      }).filter(p => p);
+        if (m) {
+          const coor = [m[1], m[2]];
+          this.points[coor] = "GRID";
+        }
+      });
       this.computeCheck();
     }
   }
 
   togglePoint(point) {
-    const isPoint = (p) => p.equals(point);
-    
-    const updateSource = (source) => {
-      // Try to find point
-      const index = source.findIndex(isPoint);
-      // Remove it if it exists
-      if (index !== -1)
-        source.splice(index, 1);
-      // Add it if it doesn't
-      else
-        source.push(new Point(point.x, point.y));
-    };
+    const isGridPoint = document.getElementById("add-grid-point").checked;
+    const type = isGridPoint ? "GRID" : "ADDED";
 
-    if (document.getElementById("add-grid-point").checked) {
-      // clear added points when we add a new grid point
-      this.addedPoints = [];
-      updateSource(this.points);
+    // Remove/add from the mapping
+    if (point in this.points) {
+      // cannot overwrite a grid point with added point
+      if (!isGridPoint) return;
+      delete this.points[point];
     } else {
-      // cannot add a grid point to satisfied set
-      if (this.points.find(isPoint)) {
-        return;
-      }
-      updateSource(this.addedPoints);
+      this.points[point] = type;
     }
-    
-    // clear violating points on any add
+
+    // clear added points when we add a new grid point
+    if (isGridPoint) {
+      for (const p in {...this.points}) {
+        if (this.points[p] === "ADDED") delete this.points[p];
+      }
+    };
     this.violatingPoints = [];
 
-    document.location.hash = this.points.map(p => `(${p.x},${p.y})`).join(';');
+    // Hash only grid points
+    document.location.hash = Object.keys(this.points)
+      .filter(p => this.points[p] !== "ADDED")
+      .map(p => {
+        console.log(typeof p);
+        return(`(${p[0]},${p[1]})`)
+      }
+      ).join(';');
 
     // check violations interactively
     this.computeCheck();
   }
 
   computeSuperset() {
-    NLogNAlgo(this.points).forEach((point) =>
-      this.addedPoints.push(point.getCopy())
+    NLogNAlgo(Object.keys(this.points)).forEach((point) =>
+      this.points[point] = "ADDED"
     );
     this.computeCheck();
   }
 
   computeCheck() {
-    let all_points = this.points.concat(this.addedPoints);
-    this.violatingPoints = getViolatingPoints(all_points);
+    this.violatingPoints = getViolatingPoints(Object.keys(this.points));
     let notif_string;
     if (this.violatingPoints.length === 0) {
       notif_string = "satisfied!";
@@ -80,8 +81,7 @@ class Store {
   }
 
   clearPoints() {
-    this.points = [];
-    this.addedPoints = [];
+    this.points = {};
     this.violatingPoints = [];
     this.checkResult = "";
     document.location.hash = "";
