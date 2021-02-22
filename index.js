@@ -1,26 +1,18 @@
 import { Point } from "./Point.js";
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
-import { STEP, CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants.js";
-
-const STEP = 100;
-const CANVAS_WIDTH = 10 * STEP;
-const CANVAS_HEIGHT = 6 * STEP;
-const INITIAL_ROWS = CANVAS_HEIGHT / 100;
-const INITIAL_COLUMNS = CANVAS_WIDTH / 100;
+import { STEP, CANVAS_HEIGHT, CANVAS_WIDTH, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
 
 class PointsAndRecs {
-  constructor(canvasCtx, rows, cols, step, stepX, stepY) {
+  constructor(canvasCtx, rows, cols, step) {
     this.store = new Store();
     this.step = step;
-    this.stepX = stepX;
-    this.stepY = stepY;
     this.graphics = new Graphics(
       canvasCtx,
+      CANVAS_WIDTH,
+      CANVAS_HEIGHT,
       this.store,
-      this.step,
-      this.stepX,
-      this.stepY
+      this.step
     );
   }
   update() {
@@ -41,21 +33,21 @@ class PointsAndRecs {
     this.startUpdateLoop();
 
     const checkResult = document.getElementById("checkResult");
-    const canvas = this.graphics.canvasCtx.canvas;
+    const svg = this.graphics.svg;
 
     function eventPoint(e) {
       return new Point(Math.round(e.offsetX / STEP),
                        Math.round(e.offsetY / STEP));
     }
 
-    canvas.addEventListener("mousemove", (e) => {
+    svg.addEventListener("mousemove", (e) => {
       this.graphics.mouse = eventPoint(e);
     });
-    canvas.addEventListener("mouseleave", (e) => {
+    svg.addEventListener("mouseleave", (e) => {
       this.graphics.mouse = null;
     });
 
-    canvas.addEventListener("click", (e) => {
+    svg.addEventListener("click", (e) => {
       this.store.togglePoint(eventPoint(e));
       checkResult.innerHTML = this.store.checkResult;
     });
@@ -96,26 +88,20 @@ class PointsAndRecs {
   }
 }
 
-function setup_canvas(width, height) {
-  const c = document.getElementById("mainCanvas");
-  const ctx = c.getContext("2d");
-  c.width = width;
-  c.height = height;
-  return ctx;
+function setup_svg(width, height) {
+  const svg = document.getElementById("mainSVG");
+  svg.setAttribute('width', width.toString());
+  svg.setAttribute('height', height.toString());
+  return svg;
 }
 
 function init(rows, cols) {
-  const canvasCtx = setup_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-  const width = canvasCtx.canvas.clientWidth;
-  const height = canvasCtx.canvas.clientHeight;
-  const stepX = width / cols
-  const stepY = height / rows
-  const step = Math.min(stepX, stepY)
-  const pointsAndRecs = new PointsAndRecs(canvasCtx, rows, cols, step, stepX, stepY);
+  const svg = setup_svg(CANVAS_WIDTH, CANVAS_HEIGHT);
+  const pointsAndRecs = new PointsAndRecs(svg, rows, cols, STEP);
   pointsAndRecs.start();
 }
 
-init(INITIAL_ROWS, INITIAL_COLUMNS);
+init(INITIAL_ROWS, INITIAL_COLS);
 
 const u = document.getElementById("update");
 u.addEventListener("click", (e) => updateGrid());

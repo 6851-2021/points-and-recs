@@ -9,70 +9,78 @@ import {
 } from "./constants.js";
 
 class Graphics {
-  constructor(canvasCtx, store, step, stepX, stepY) {
-    this.canvasCtx = canvasCtx;
+  constructor(svg, width, height, store, step) {
+    this.svg = svg;
     this.store = store;
     this.prevFrameTime = performance.now();
 
     this.step = step;
     this.radius = step / 4;
-    this.stepX = stepX;
-    this.stepY = stepY;
-    this.width = this.canvasCtx.canvas.clientWidth;
-    this.height = this.canvasCtx.canvas.clientHeight;
+    this.width = width;
+    this.height = height;
     // track mouse position to allow hover
     this.mouse = null;
+    // namespace for svg
+    this.namespace = "http://www.w3.org/2000/svg";
   }
+
   drawGrid() {
-    // canvas is really low level... this should probably be factored out
-    this.canvasCtx.save();
-
     // draw background
-    this.canvasCtx.beginPath();
-    this.canvasCtx.rect(0, 0, this.width, this.height);
-    this.canvasCtx.fillStyle = GRID_BACKGROUND_COLOR;
-    this.canvasCtx.fill();
+    const svgBackground = document.createElementNS(this.namespace, 'rect');
+    svgBackground.setAttribute('width', this.width);
+    svgBackground.setAttribute('height', this.height);
+    svgBackground.setAttribute('x', 0);
+    svgBackground.setAttribute('y', 0);
+    svgBackground.setAttribute('fill', GRID_BACKGROUND_COLOR);
+    this.svg.appendChild(svgBackground);
 
-    // draw grid
-    this.canvasCtx.beginPath();
-    for (let x = 0; x <= this.width; x += this.stepX) {
-      this.canvasCtx.moveTo(x, 0);
-      this.canvasCtx.lineTo(x, this.height);
+    // draw columns
+    for (let x = 0; x <= this.width; x += this.step) {
+      const col = document.createElementNS(this.namespace, 'line');
+      col.setAttribute('x1', x);
+      col.setAttribute('y1', 0);
+      col.setAttribute('x2', x);
+      col.setAttribute('y2', this.height)
+      col.setAttribute('stroke', GRID_STROKE_COLOR);
+      this.svg.appendChild(col);
     }
-    for (let y = 0; y <= this.height; y += this.stepY) {
-      this.canvasCtx.moveTo(0, y);
-      this.canvasCtx.lineTo(this.width, y);
+    // draw rows
+    for (let y = 0; y <= this.height; y += this.step) {
+      const row = document.createElementNS(this.namespace, 'line');
+      row.setAttribute('x1', 0);
+      row.setAttribute('y1', y);
+      row.setAttribute('x2', this.width);
+      row.setAttribute('y2', y)
+      row.setAttribute('stroke', GRID_STROKE_COLOR);
+      this.svg.appendChild(row);
     }
-    this.canvasCtx.strokeStyle = GRID_STROKE_COLOR;
-    this.canvasCtx.lineWidth = 1;
-    this.canvasCtx.stroke();
-
-    this.canvasCtx.restore();
   }
 
   drawPoint(point, color) {
-    let [x, y] = [point.x, point.y];
-    this.canvasCtx.save();
-    this.canvasCtx.beginPath();
-    this.canvasCtx.arc(this.stepX * x, this.stepY * y, this.radius, 0, 2 * Math.PI);
-    this.canvasCtx.fillStyle = color;
-    this.canvasCtx.fill();
-    this.canvasCtx.strokeStyle = POINT_STROKE_COLOR;
-    this.canvasCtx.lineWidth = 1;
-    this.canvasCtx.stroke();
-    this.canvasCtx.restore();
+    let [x, y] = [point.x * this.step, point.y * this.step];
+
+    const circle = document.createElementNS(this.namespace, 'circle');
+    circle.setAttribute('cx', x);
+    circle.setAttribute('cy', y);
+    circle.setAttribute('r', this.radius);
+    circle.setAttribute('fill', color);
+    circle.setAttribute('stroke', POINT_STROKE_COLOR);
+    this.svg.appendChild(circle);
   }
 
   drawUnsatisfiedPair(point_a, point_b) {
-    this.canvasCtx.save();
-    this.canvasCtx.beginPath();
-    this.canvasCtx.moveTo(this.step * point_a.x, this.step * point_a.y);
-    this.canvasCtx.lineTo(this.step * point_b.x, this.step * point_b.y);
-    this.canvasCtx.strokeStyle = UNSATISFIED_POINT_COLOR;
-    this.canvasCtx.lineWidth = 5;
-    this.canvasCtx.setLineDash([15, 15])
-    this.canvasCtx.stroke();
-    this.canvasCtx.restore();
+    // draw lines
+    const line = document.createElementNS(this.namespace, 'line');
+    line.setAttribute('x1', this.step * point_a.x);
+    line.setAttribute('y1', this.step * point_a.y);
+    line.setAttribute('x2', this.step * point_b.x);
+    line.setAttribute('y2', this.step * point_b.y);
+    line.setAttribute('stroke', UNSATISFIED_POINT_COLOR);
+    line.setAttribute('stroke-width', 5);
+    line.setAttribute('stroke-dasharray', [15, 15]);
+    this.svg.appendChild(line);
+
+    // draw points
     this.drawPoint(point_a, UNSATISFIED_POINT_COLOR);
     this.drawPoint(point_b, UNSATISFIED_POINT_COLOR);
   }
