@@ -18,8 +18,8 @@ class Store {
     this.checkResult = "";
 
     if (document.location.hash && document.location.hash[0] === '#') {
-      this.points = document.location.hash.slice(1).split(',').map(p => {
-        const m = p.trim().match(/\((-?[\d]+);\s*(-?[\d]+)\)/);
+      this.points = document.location.hash.slice(1).split(';').map(p => {
+        const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
         return m ? new Point(parseInt(m[1]), parseInt(m[2])) : null;
       }).filter(p => p);
       this.computeCheck();
@@ -61,7 +61,7 @@ class Store {
     // clear violating points on any add
     this.violatingPoints = [];
 
-    document.location.hash = this.points.map(p => `(${p.x};${p.y})`).join(',');
+    document.location.hash = this.points.map(p => `(${p.x},${p.y})`).join(';');
 
     // check violations interactively
     this.computeCheck();
@@ -71,7 +71,7 @@ class Store {
     NLogNAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
-    this.checkResult = "";
+    this.computeCheck();
   }
 
   computeCheck() {
