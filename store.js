@@ -45,7 +45,7 @@ class Store {
     NLogNAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
-    this.checkResult = "";
+    this.computeCheck();
   }
 
   computeCheck() {
