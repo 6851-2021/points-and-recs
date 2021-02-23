@@ -35,7 +35,7 @@ function tidyup(list_x,layers) {
     return tidyup_idx(list_x,idx);
 }
 
-function FPTAlgo_(points) {
+function FPTAlgo_x(points) {
     var t_start = performance.now();
     //sort points by y
     points.sort((a,b)=>a.y-b.y);
@@ -123,11 +123,11 @@ function FPTAlgo_(points) {
 function FPTAlgo(points) {
     let all_x=[],all_y=[];
     for(let pt of points) {all_x.push(pt.x); all_y.push(pt.y);}
-    if(new Set(all_x).size<new Set(all_y).size) return FPTAlgo_(points);
+    if(new Set(all_x).size<new Set(all_y).size) return FPTAlgo_x(points);
     // swap x and y
     let points_rev=[];
     for(let pt of points) points_rev.push(new Point(pt.y,pt.x));
-    let result_rev=FPTAlgo_(points_rev),result=[];
+    let result_rev=FPTAlgo_x(points_rev),result=[];
     for(let pt of result_rev) result.push(new Point(pt.y,pt.x));
     return result;
 }
