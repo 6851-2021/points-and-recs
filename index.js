@@ -90,8 +90,10 @@ function init(rows, cols) {
   const pointsAndRecs = new PointsAndRecs(svg, rows, cols);
   pointsAndRecs.start();
 
-  document.getElementById("update").addEventListener("click",
-    (e) => updateGrid());
+  document.getElementById("update").addEventListener("click", (e) => {
+    e.preventDefault();
+    updateGrid()
+  });
 
   function updateGrid() {
     const newRows = Math.abs(parseInt(document.getElementById("rows").value));

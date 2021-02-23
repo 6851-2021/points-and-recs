@@ -27,38 +27,50 @@
         background: white;
         width: 100%;
       }
+      #rows, #cols {
+        width: 4em;
+      }
+      .input-group {
+        display: inline-block;
+      }
     </style>
   </head>
 
   <body>
     <div id="wrapper">
-      <div>
-        <label for="rows">Rows:</label><br>
-        <input type="number" id="rows" name="rows" value=6><br>
-        <label for="cols">Columns:</label><br>
-        <input type="number" id="cols" name="cols" value=10><br>
-        <button id="update">Update Grid</button>
-      </div>
-      <br />
+      <form id="resize">
+        <label for="rows">Rows:</label>
+        <input type="number" id="rows" name="rows" value="6">
+        <label for="cols">Columns:</label>
+        <input type="number" id="cols" name="cols" value="10">
+        <button type="submit" id="update">Update Grid</button>
+      </form>
       <button id="superset"><i>O</i>(<i>n</i> log <i>n</i>) superset</button>
       <button id="check">check satisfaction</button>
       <button id="clear">clear all points</button>
-      <input
-        type="radio"
-        id="add-grid-point"
-        name="point-type"
-        value="grid-point"
-        checked
-      />
-      <label for="add-grid-point">construct grid points</label>
-      <input
-        type="radio"
-        id="add-satisfied-set"
-        name="point-type"
-        value="satisfied-set"
-      />
-      <label for="add-satisfied-set">construct satisfied set</label>
-      <input type="file" id="inputFile" accept="application/JSON">
+      <div class="input-group">
+        <input
+          type="radio"
+          id="add-grid-point"
+          name="point-type"
+          value="grid-point"
+          checked
+        />
+        <label for="add-grid-point">construct grid points</label>
+      </div>
+      <div class="input-group">
+        <input
+          type="radio"
+          id="add-satisfied-set"
+          name="point-type"
+          value="satisfied-set"
+        />
+        <label for="add-satisfied-set">construct satisfied set</label>
+      </div>
+      <div class="input-group">
+        <label for="inputFile">Load JSON:</label> &nbsp;
+        <input type="file" id="inputFile" accept="application/JSON">
+      </div>
       <svg id="mainSVG" xmlns="http://www.w3.org/2000/svg"></svg>
       <span>
         <button id="save">Save</button>
