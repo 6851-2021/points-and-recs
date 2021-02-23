@@ -38,8 +38,7 @@ function tidyup(list_x,layers) {
 // points is a list of unique Points
 // Returns a list of points to add
 function FPTAlgo(points) {
-    console.log(JSON.stringify(tidyup([1,2,3],[[1,3],[2]])));
-    var t0 = performance.now();
+    var t_start = performance.now();
     //sort points by y
     points.sort((a,b)=>a.y-b.y);
     let all_x=[];
@@ -111,14 +110,13 @@ function FPTAlgo(points) {
             if(f.has(next_state)&&f.get(next_state).length<=points.length) continue;
             f.set(next_state,points);
         }
-        console.log(f.size);
     }
     var ans=null;
     for(const [_,points] of f) {
         if(ans==null||ans.length>points.length) ans=points;
     }
-    var t1 = performance.now();
-    console.log("Took " + (t1 - t0) + " milliseconds, soln of size "+ans.length+".");
+    var t_finish = performance.now();
+    console.log("Took " + (t_finish - t_start) + " milliseconds, soln of size "+ans.length+".");
     return ans;
 }
 
