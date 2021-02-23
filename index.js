@@ -46,8 +46,12 @@ class PointsAndRecs {
       checkResult.innerHTML = this.store.checkResult;
     });
 
-    document.getElementById("superset").addEventListener("click", (e) => {
+    document.getElementById("nlogsuperset").addEventListener("click", (e) => {
       this.store.computeSuperset();
+      checkResult.innerHTML = this.store.checkResult;
+    });
+    document.getElementById("msuperset").addEventListener("click", (e) => {
+      this.store.computeMSuperset();
       checkResult.innerHTML = this.store.checkResult;
     });
     document.getElementById("check").addEventListener("click", (e) => {

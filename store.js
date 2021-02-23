@@ -1,4 +1,5 @@
 import { NLogNAlgo } from "./algo/nlogn.js";
+import { FPTAlgo } from "./algo/fpt.js";
 import { getViolatingPoints } from "./algo/Check.js";
 import { Point } from "./Point.js";
 import { STEP } from "./constants.js";
@@ -59,6 +60,13 @@ class Store {
 
   computeSuperset() {
     NLogNAlgo(this.points).forEach((point) =>
+      this.addedPoints.push(point.getCopy())
+    );
+    this.computeCheck();
+  }
+  
+  computeMSuperset() {
+    FPTAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
     this.computeCheck();
