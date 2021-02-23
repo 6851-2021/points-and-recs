@@ -1,62 +1,67 @@
 import { Point } from "./Point.js";
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
-import { STEP, CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants.js";
-
+import { STEP, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
 
 class PointsAndRecs {
-  constructor(canvasCtx) {
+  constructor(svg, rows, cols) {
     this.store = new Store();
-    this.graphics = new Graphics(canvasCtx, STEP, this.store);
+    this.graphics = new Graphics(
+      svg,
+      this.store,
+      rows,
+      cols
+    );
   }
   update() {
     this.graphics.draw();
   }
-  updateLoop() {
-    this.update();
-    window.requestAnimationFrame(() => {
-      this.updateLoop();
-    });
-  }
-  startUpdateLoop() {
-    window.requestAnimationFrame(() => {
-      this.updateLoop();
-    });
-  }
   start() {
-    this.startUpdateLoop();
-
     const checkResult = document.getElementById("checkResult");
-    const canvas = this.graphics.canvasCtx.canvas;
+    const svg = this.graphics.svg;
 
     function eventPoint(e) {
-      return new Point(Math.round(e.offsetX / STEP),
-                       Math.round(e.offsetY / STEP));
+      const matrix = svg.getCTM().inverse();
+      const pt = svg.createSVGPoint();
+      pt.x = e.offsetX;
+      pt.y = e.offsetY;
+      const transformed = pt.matrixTransform(matrix);
+      return new Point(Math.round(transformed.x / STEP),
+                       Math.round(transformed.y / STEP));
     }
 
-    canvas.addEventListener("mousemove", (e) => {
-      this.graphics.mouse = eventPoint(e);
+    svg.addEventListener("mousemove", (e) => {
+      const point = eventPoint(e);
+      if (!(this.graphics.mouse && this.graphics.mouse.equals(point))) {
+        this.graphics.mouse = point;
+        this.update();
+      }
     });
-    canvas.addEventListener("mouseleave", (e) => {
+    svg.addEventListener("mouseleave", (e) => {
       this.graphics.mouse = null;
+      this.update();
     });
 
-    canvas.addEventListener("click", (e) => {
+    svg.addEventListener("click", (e) => {
       this.store.togglePoint(eventPoint(e));
       checkResult.innerHTML = this.store.checkResult;
+      this.update();
     });
 
     document.getElementById("superset").addEventListener("click", (e) => {
       this.store.computeSuperset();
       checkResult.innerHTML = this.store.checkResult;
+      this.update();
     });
     document.getElementById("check").addEventListener("click", (e) => {
       this.store.computeCheck();
       checkResult.innerHTML = this.store.checkResult;
+      this.update();
     });
     document.getElementById("clear").addEventListener("click", (e) => {
       this.store.clearPoints();
       checkResult.innerHTML = this.store.checkResult;
+      this.update();
     });
     document.getElementById("save").addEventListener("click", (e) => {
       this.store.savePoints(document.getElementById("filename").value);
@@ -77,23 +82,24 @@ class PointsAndRecs {
         reader.readAsText(file);
       }
     })
-
-
   }
 }
 
-function setup_canvas(width, height) {
-  const c = document.getElementById("mainCanvas");
-  const ctx = c.getContext("2d");
-  c.width = width;
-  c.height = height;
-  return ctx;
-}
-
-function init() {
-  const canvasCtx = setup_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-  const pointsAndRecs = new PointsAndRecs(canvasCtx);
+function init(rows, cols) {
+  const svg = document.getElementById("mainSVG");
+  const pointsAndRecs = new PointsAndRecs(svg, rows, cols);
   pointsAndRecs.start();
+
+  document.getElementById("update").addEventListener("click", (e) => {
+    e.preventDefault();
+    updateGrid()
+  });
+
+  function updateGrid() {
+    const newRows = Math.abs(parseInt(document.getElementById("rows").value));
+    const newCols = Math.abs(parseInt(document.getElementById("cols").value));
+    pointsAndRecs.graphics.resize(newRows, newCols);
+  }
 }
 
-init();
+init(INITIAL_ROWS, INITIAL_COLS);

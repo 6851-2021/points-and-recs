@@ -1,7 +1,7 @@
 // sizes for grid elements
 export const STEP = 100;
-export const CANVAS_WIDTH = 10 * STEP;
-export const CANVAS_HEIGHT = 6 * STEP;
+export const INITIAL_ROWS = 6;
+export const INITIAL_COLS = 10;
 
 // colors for grid elements
 export const GRID_BACKGROUND_COLOR = "#ffffff";

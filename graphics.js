@@ -6,77 +6,106 @@ import {
   UNSATISFIED_POINT_COLOR,
   GRID_POINT_COLOR,
   ADDED_POINT_COLOR,
+  STEP,
 } from "./constants.js";
 
 class Graphics {
-  constructor(canvasCtx, step, store) {
-    this.canvasCtx = canvasCtx;
+  constructor(svg, store, rows, cols) {
+    this.svg = svg;
     this.store = store;
-    this.prevFrameTime = performance.now();
 
-    this.step = step;
-    this.radius = step / 4;
-    this.width = this.canvasCtx.canvas.clientWidth;
-    this.height = this.canvasCtx.canvas.clientHeight;
+    this.radius = STEP / 4;
     // track mouse position to allow hover
     this.mouse = null;
+    // namespace for svg
+    this.namespace = "http://www.w3.org/2000/svg";
+    this.initGroups();
+    this.resize(rows, cols);
   }
+
+  initGroups() {
+    // Should be called before any other draw methods.
+    // <g class="grid">
+    this.gridGroup = document.createElementNS(this.namespace, 'g');
+    this.gridGroup.setAttribute('class', 'grid');
+    this.svg.appendChild(this.gridGroup);
+    // <g class="points">
+    this.unsatGroup = document.createElementNS(this.namespace, 'g');
+    this.unsatGroup.setAttribute('class', 'unsat');
+    this.svg.appendChild(this.unsatGroup);
+    // <g class="points">
+    this.pointGroup = document.createElementNS(this.namespace, 'g');
+    this.pointGroup.setAttribute('class', 'points');
+    this.svg.appendChild(this.pointGroup);
+  }
+
+  resize(rows, cols) {
+    this.rows = rows;
+    this.cols = cols;
+    this.drawGrid();
+    this.draw();
+  }
+
   drawGrid() {
-    // canvas is really low level... this should probably be factored out
-    this.canvasCtx.save();
+    this.svg.setAttribute('viewBox',
+      `-1 -1 ${this.cols * STEP + 2} ${this.rows * STEP + 2}`);
 
-    // draw background
-    this.canvasCtx.beginPath();
-    this.canvasCtx.rect(0, 0, this.width, this.height);
-    this.canvasCtx.fillStyle = GRID_BACKGROUND_COLOR;
-    this.canvasCtx.fill();
+    this.gridGroup.innerHTML = "";
 
-    // draw grid
-    this.canvasCtx.beginPath();
-    for (let x = 0; x <= this.width; x += this.step) {
-      this.canvasCtx.moveTo(x, 0);
-      this.canvasCtx.lineTo(x, this.height);
+    // draw columns
+    for (let x = 0; x <= this.cols; x++) {
+      const col = document.createElementNS(this.namespace, 'line');
+      col.setAttribute('x1', x * STEP);
+      col.setAttribute('y1', 0 * STEP);
+      col.setAttribute('x2', x * STEP);
+      col.setAttribute('y2', this.rows * STEP)
+      col.setAttribute('stroke', GRID_STROKE_COLOR);
+      this.gridGroup.appendChild(col);
     }
-    for (let y = 0; y <= this.height; y += this.step) {
-      this.canvasCtx.moveTo(0, y);
-      this.canvasCtx.lineTo(this.width, y);
+    // draw rows
+    for (let y = 0; y <= this.rows; y++) {
+      const row = document.createElementNS(this.namespace, 'line');
+      row.setAttribute('x1', 0 * STEP);
+      row.setAttribute('y1', y * STEP);
+      row.setAttribute('x2', this.cols * STEP);
+      row.setAttribute('y2', y * STEP)
+      row.setAttribute('stroke', GRID_STROKE_COLOR);
+      this.gridGroup.appendChild(row);
     }
-    this.canvasCtx.strokeStyle = GRID_STROKE_COLOR;
-    this.canvasCtx.lineWidth = 1;
-    this.canvasCtx.stroke();
-
-    this.canvasCtx.restore();
   }
 
   drawPoint(point, color) {
-    let [x, y] = [point.x, point.y];
-    this.canvasCtx.save();
-    this.canvasCtx.beginPath();
-    this.canvasCtx.arc(this.step * x, this.step * y, this.radius, 0, 2 * Math.PI);
-    this.canvasCtx.fillStyle = color;
-    this.canvasCtx.fill();
-    this.canvasCtx.strokeStyle = POINT_STROKE_COLOR;
-    this.canvasCtx.lineWidth = 1;
-    this.canvasCtx.stroke();
-    this.canvasCtx.restore();
+    const circle = document.createElementNS(this.namespace, 'circle');
+    circle.setAttribute('cx', point.x * STEP);
+    circle.setAttribute('cy', point.y * STEP);
+    circle.setAttribute('r', this.radius);
+    circle.setAttribute('fill', color);
+    circle.setAttribute('stroke', POINT_STROKE_COLOR);
+    this.pointGroup.appendChild(circle);
   }
 
   drawUnsatisfiedPair(point_a, point_b) {
-    this.canvasCtx.save();
-    this.canvasCtx.beginPath();
-    this.canvasCtx.moveTo(this.step * point_a.x, this.step * point_a.y);
-    this.canvasCtx.lineTo(this.step * point_b.x, this.step * point_b.y);
-    this.canvasCtx.strokeStyle = UNSATISFIED_POINT_COLOR;
-    this.canvasCtx.lineWidth = 5;
-    this.canvasCtx.setLineDash([15, 15])
-    this.canvasCtx.stroke();
-    this.canvasCtx.restore();
+    // draw lines
+    const line = document.createElementNS(this.namespace, 'line');
+    line.setAttribute('x1', point_a.x * STEP);
+    line.setAttribute('y1', point_a.y * STEP);
+    line.setAttribute('x2', point_b.x * STEP);
+    line.setAttribute('y2', point_b.y * STEP);
+    line.setAttribute('stroke', UNSATISFIED_POINT_COLOR);
+    line.setAttribute('stroke-width', 5);
+    line.setAttribute('stroke-dasharray', [15, 15]);
+    this.unsatGroup.appendChild(line);
+
+    // draw points
     this.drawPoint(point_a, UNSATISFIED_POINT_COLOR);
     this.drawPoint(point_b, UNSATISFIED_POINT_COLOR);
   }
-  
+
   draw() {
-    this.drawGrid();
+    // Draw everything except grid; drawGrid() is called by resize()
+
+    this.pointGroup.innerHTML = "";
+    this.unsatGroup.innerHTML = "";
 
     // draw the store's points as black
     for (const point of this.store.points) {
