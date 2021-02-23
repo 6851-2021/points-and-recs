@@ -82,8 +82,6 @@ class PointsAndRecs {
         reader.readAsText(file);
       }
     })
-
-
   }
 }
 
@@ -91,15 +89,15 @@ function init(rows, cols) {
   const svg = document.getElementById("mainSVG");
   const pointsAndRecs = new PointsAndRecs(svg, rows, cols);
   pointsAndRecs.start();
+
+  document.getElementById("update").addEventListener("click",
+    (e) => updateGrid());
+
+  function updateGrid() {
+    const newRows = Math.abs(parseInt(document.getElementById("rows").value));
+    const newCols = Math.abs(parseInt(document.getElementById("cols").value));
+    pointsAndRecs.graphics.resize(newRows, newCols);
+  }
 }
 
 init(INITIAL_ROWS, INITIAL_COLS);
-
-const u = document.getElementById("update");
-u.addEventListener("click", (e) => updateGrid());
-
-function updateGrid() {
-  const newRows = document.getElementById("rows").value;
-  const newCols = document.getElementById("cols").value;
-  init(Math.abs(parseInt(newRows)), Math.abs(parseInt(newCols)))
-}

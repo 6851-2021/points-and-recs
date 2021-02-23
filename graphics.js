@@ -13,15 +13,19 @@ class Graphics {
   constructor(svg, store, rows, cols) {
     this.svg = svg;
     this.store = store;
-    this.prevFrameTime = performance.now();
-    
+
     this.radius = STEP / 4;
-    this.rows = rows;
-    this.cols = cols;
     // track mouse position to allow hover
     this.mouse = null;
     // namespace for svg
     this.namespace = "http://www.w3.org/2000/svg";
+    this.resize(rows, cols);
+  }
+
+  resize(rows, cols) {
+    this.rows = rows;
+    this.cols = cols;
+    this.draw();
   }
 
   drawGrid() {
