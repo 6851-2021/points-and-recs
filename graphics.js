@@ -28,6 +28,9 @@ class Graphics {
   }
 
   drawGrid() {
+    // clear svg
+    this.svg.innerHTML = "";
+
     // draw background
     const svgBackground = document.createElementNS(this.namespace, 'rect');
     svgBackground.setAttribute('width', this.width);
