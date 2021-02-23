@@ -1,52 +1,38 @@
 import { Point } from "../Point.js";
 
-function merge_layers(cur_layers,new_layers) {
-    for(var u=0;u<cur_layers.length;++u) {
-        if(u<new_layers.length) new_layers[u]=new_layers[u].concat(cur_layers[u]);
-        else new_layers.push(cur_layers[u]);
-    }
-}
-
-function tidyup_idx(list_x,idx) {
-    if(!list_x.length) return [];
-    let mi=null;
-    for(const x of list_x) {
-        if(mi==null||idx.get(x)<mi) mi=idx.get(x);
-    }
-    var found_x=[],stash_x=[],new_layers=[];
-    for(const x of list_x) {
-        if(idx.get(x)==mi) {
-            merge_layers(tidyup_idx(stash_x,idx),new_layers);
-            found_x.push(x); stash_x=[];
-        }
-        else stash_x.push(x);
-    }
-    merge_layers(tidyup_idx(stash_x,idx),new_layers);
-    new_layers.unshift(found_x);
-    return new_layers;
-}
-
 // optimization suggested by Danny Mittal
-function tidyup(list_x,layers) {
-    var idx=new Map();
-    for(var u=0;u<layers.length;++u) {
-        for(const x of layers[u]) idx.set(x,u);
+function reorder(il,ir,lvl,in_idx,out_idx) {
+    if(il>ir) return [];
+    let mi=null;
+    for(let i=il;i<=ir;++i) {
+        if(mi==null||in_idx[i]<mi) mi=in_idx[i];
     }
-    return tidyup_idx(list_x,idx);
+    let found_x=[il-1];
+    for(let i=il;i<=ir;++i) {
+        if(in_idx[i]==mi) {found_x.push(i); out_idx[i]=lvl;}
+    }
+    found_x.push(ir+1);
+    for(let i=1;i<found_x.length;++i) {
+        let l=found_x[i-1]+1,r=found_x[i]-1;
+        reorder(l,r,lvl+1,in_idx,out_idx);
+    }
 }
 
 function FPTAlgo_x(points) {
-    var t_start = performance.now();
+    let t_start = performance.now();
     //sort points by y
     points.sort((a,b)=>a.y-b.y);
     let all_x=[];
     for(let pt of points) all_x.push(pt.x);
     all_x=[...new Set(all_x)].sort((a,b)=>a-b); // sort and unique
     // f stores state -> points to add
-    // a state is an array of arrays, each array represents equal elements, in decreasing order of y
-    // we have to store the key in Json
+    // a state stores the level of each x, level 0: largest y, level inf: smallest y, etc.
+    // we have to store the keys in Json
+    const num_x=all_x.length;
+    let x_id=new Map();
+    for(let u=0;u<num_x;++u) x_id.set(all_x[u],u);
     let f=new Map();
-    f.set(JSON.stringify([all_x]),[]);
+    f.set(JSON.stringify(new Array(num_x).fill(0)),[]);
     for(let il=0,ir;il<points.length;il=ir+1) {
         ir=il;
         while(ir+1<points.length&&points[ir+1].y===points[il].y) ++ir;
@@ -59,61 +45,44 @@ function FPTAlgo_x(points) {
             cur_f.push([[],JSON.parse(state),points]);
         }
         for(const x of all_x) {
+            const xid=x_id.get(x);
             const has_x=cur_x.has(x);
             let next_f=[];
             for(const [cur_xs,state,points] of cur_f) {
-                let x_pos=null;
-                for(var u=0;u<state.length;++u) {
-                    if(state[u].indexOf(x)!=-1) {x_pos=u; break;}
-                }
-                let prev_x=(cur_xs.length)?cur_xs[cur_xs.length-1]:-1;
+                let x_pos=state[xid];
+                let pid=(cur_xs.length)?cur_xs[cur_xs.length-1]:-1;
                 if(!has_x) { //do not place at x
-                    let invalid=false;
-                    for(var u=x_pos+1;u<state.length;++u) {
-                        if(state[u].indexOf(prev_x)!=-1) {invalid=true; break;}
-                    }
+                    let invalid=state[pid]>x_pos;
                     if(!invalid) next_f.push([cur_xs,state,points]);
                 }
                 if(true) { //place at x
                     let invalid=false;
-                    for(var u=0;u<x_pos;++u) {
-                        for(const obs_x of state[u]) {
-                            if(obs_x>prev_x&&obs_x<x) {invalid=true; break;}
-                        }
-                        if(invalid) break;
+                    for(let xi=pid+1;xi<xid;++xi) {
+                        if(state[xi]<x_pos) {invalid=true; break;}
                     }
                     if(!invalid)
-                        next_f.push([cur_xs.concat([x]),state,has_x?points:(points.concat([new Point(x,y)]))]);
+                        next_f.push([cur_xs.concat([xid]),state,has_x?points:(points.concat([new Point(x,y)]))]);
                 }
             }
             cur_f=next_f;
         }
         f=new Map();
         for(const [cur_xs,state,points] of cur_f) {
-            let next_state=[cur_xs].concat(state);
-            for(const x of cur_xs) {
-                for(var u=1;u<next_state.length;++u) {
-                    const idx=next_state[u].indexOf(x);
-                    if(idx==-1) continue;
-                    // cloning
-                    var nxt_u=[...next_state[u]];
-                    nxt_u.splice(idx,1);
-                    next_state[u]=nxt_u;
-                }
-            }
-            next_state=next_state.filter(el=>el!=[]);
-            next_state=tidyup(all_x,next_state);
-            next_state=JSON.stringify(next_state);
+            let next_state=[...state];
+            for(let x of cur_xs) next_state[x]=-1;
+            let out_state=[...next_state];
+            reorder(0,num_x-1,0,next_state,out_state);
+            next_state=JSON.stringify(out_state);
             // update f[next_state] with points
             if(f.has(next_state)&&f.get(next_state).length<=points.length) continue;
             f.set(next_state,points);
         }
     }
-    var ans=null;
+    let ans=null;
     for(const [_,points] of f) {
         if(ans==null||ans.length>points.length) ans=points;
     }
-    var t_finish = performance.now();
+    let t_finish = performance.now();
     console.log("Took " + (t_finish - t_start) + " milliseconds, soln of size "+ans.length+".");
     return ans;
 }
