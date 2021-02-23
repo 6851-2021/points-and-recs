@@ -19,18 +19,38 @@ class Graphics {
     this.mouse = null;
     // namespace for svg
     this.namespace = "http://www.w3.org/2000/svg";
+    this.initGroups();
     this.resize(rows, cols);
+  }
+
+  initGroups() {
+    // Should be called before any other draw methods.
+    // <g class="grid">
+    this.gridGroup = document.createElementNS(this.namespace, 'g');
+    this.gridGroup.setAttribute('class', 'grid');
+    this.svg.appendChild(this.gridGroup);
+    // <g class="points">
+    this.unsatGroup = document.createElementNS(this.namespace, 'g');
+    this.unsatGroup.setAttribute('class', 'unsat');
+    this.svg.appendChild(this.unsatGroup);
+    // <g class="points">
+    this.pointGroup = document.createElementNS(this.namespace, 'g');
+    this.pointGroup.setAttribute('class', 'points');
+    this.svg.appendChild(this.pointGroup);
   }
 
   resize(rows, cols) {
     this.rows = rows;
     this.cols = cols;
+    this.drawGrid();
     this.draw();
   }
 
   drawGrid() {
-    // clear svg
-    this.svg.innerHTML = "";
+    this.svg.setAttribute('viewBox',
+      `-1 -1 ${this.cols * STEP + 2} ${this.rows * STEP + 2}`);
+
+    this.gridGroup.innerHTML = "";
 
     // draw columns
     for (let x = 0; x <= this.cols; x++) {
@@ -40,7 +60,7 @@ class Graphics {
       col.setAttribute('x2', x * STEP);
       col.setAttribute('y2', this.rows * STEP)
       col.setAttribute('stroke', GRID_STROKE_COLOR);
-      this.svg.appendChild(col);
+      this.gridGroup.appendChild(col);
     }
     // draw rows
     for (let y = 0; y <= this.rows; y++) {
@@ -50,7 +70,7 @@ class Graphics {
       row.setAttribute('x2', this.cols * STEP);
       row.setAttribute('y2', y * STEP)
       row.setAttribute('stroke', GRID_STROKE_COLOR);
-      this.svg.appendChild(row);
+      this.gridGroup.appendChild(row);
     }
   }
 
@@ -61,7 +81,7 @@ class Graphics {
     circle.setAttribute('r', this.radius);
     circle.setAttribute('fill', color);
     circle.setAttribute('stroke', POINT_STROKE_COLOR);
-    this.svg.appendChild(circle);
+    this.pointGroup.appendChild(circle);
   }
 
   drawUnsatisfiedPair(point_a, point_b) {
@@ -74,7 +94,7 @@ class Graphics {
     line.setAttribute('stroke', UNSATISFIED_POINT_COLOR);
     line.setAttribute('stroke-width', 5);
     line.setAttribute('stroke-dasharray', [15, 15]);
-    this.svg.appendChild(line);
+    this.unsatGroup.appendChild(line);
 
     // draw points
     this.drawPoint(point_a, UNSATISFIED_POINT_COLOR);
@@ -82,10 +102,10 @@ class Graphics {
   }
 
   draw() {
-    this.svg.setAttribute('viewBox',
-      `-1 -1 ${this.cols * STEP + 2} ${this.rows * STEP + 2}`);
+    // Draw everything except grid; drawGrid() is called by resize()
 
-    this.drawGrid();
+    this.pointGroup.innerHTML = "";
+    this.unsatGroup.innerHTML = "";
 
     // draw the store's points as black
     for (const point of this.store.points) {
