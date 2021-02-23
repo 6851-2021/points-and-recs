@@ -1,15 +1,13 @@
 import { Point } from "./Point.js";
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
-import { STEP, CANVAS_HEIGHT, CANVAS_WIDTH, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
+import { STEP, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
 
 class PointsAndRecs {
   constructor(svg, rows, cols) {
     this.store = new Store();
     this.graphics = new Graphics(
       svg,
-      CANVAS_WIDTH,
-      CANVAS_HEIGHT,
       this.store,
       rows,
       cols
@@ -89,14 +87,8 @@ class PointsAndRecs {
   }
 }
 
-function setup_svg(width, height) {
-  const svg = document.getElementById("mainSVG");
-  svg.setAttribute('viewBox', `-1 -1 ${width+2} ${height+2}`);
-  return svg;
-}
-
 function init(rows, cols) {
-  const svg = setup_svg(CANVAS_WIDTH, CANVAS_HEIGHT);
+  const svg = document.getElementById("mainSVG");
   const pointsAndRecs = new PointsAndRecs(svg, rows, cols);
   pointsAndRecs.start();
 }

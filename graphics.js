@@ -6,21 +6,18 @@ import {
   UNSATISFIED_POINT_COLOR,
   GRID_POINT_COLOR,
   ADDED_POINT_COLOR,
+  STEP,
 } from "./constants.js";
 
 class Graphics {
-  constructor(svg, width, height, store, rows, cols) {
+  constructor(svg, store, rows, cols) {
     this.svg = svg;
     this.store = store;
     this.prevFrameTime = performance.now();
     
-    this.stepX = width / cols;
-    this.stepY = height / rows;
-
-    this.step = Math.min(this.stepX, this.stepY);
-    this.radius = this.step / 4;
-    this.width = width;
-    this.height = height;
+    this.radius = STEP / 4;
+    this.rows = rows;
+    this.cols = cols;
     // track mouse position to allow hover
     this.mouse = null;
     // namespace for svg
@@ -32,33 +29,31 @@ class Graphics {
     this.svg.innerHTML = "";
 
     // draw columns
-    for (let x = 0; x <= this.width; x += this.stepX) {
+    for (let x = 0; x <= this.cols; x++) {
       const col = document.createElementNS(this.namespace, 'line');
-      col.setAttribute('x1', x);
-      col.setAttribute('y1', 0);
-      col.setAttribute('x2', x);
-      col.setAttribute('y2', this.height)
+      col.setAttribute('x1', x * STEP);
+      col.setAttribute('y1', 0 * STEP);
+      col.setAttribute('x2', x * STEP);
+      col.setAttribute('y2', this.rows * STEP)
       col.setAttribute('stroke', GRID_STROKE_COLOR);
       this.svg.appendChild(col);
     }
     // draw rows
-    for (let y = 0; y <= this.height; y += this.stepY) {
+    for (let y = 0; y <= this.rows; y++) {
       const row = document.createElementNS(this.namespace, 'line');
-      row.setAttribute('x1', 0);
-      row.setAttribute('y1', y);
-      row.setAttribute('x2', this.width);
-      row.setAttribute('y2', y)
+      row.setAttribute('x1', 0 * STEP);
+      row.setAttribute('y1', y * STEP);
+      row.setAttribute('x2', this.cols * STEP);
+      row.setAttribute('y2', y * STEP)
       row.setAttribute('stroke', GRID_STROKE_COLOR);
       this.svg.appendChild(row);
     }
   }
 
   drawPoint(point, color) {
-    let [x, y] = [point.x * this.stepX, point.y * this.stepY];
-
     const circle = document.createElementNS(this.namespace, 'circle');
-    circle.setAttribute('cx', x);
-    circle.setAttribute('cy', y);
+    circle.setAttribute('cx', point.x * STEP);
+    circle.setAttribute('cy', point.y * STEP);
     circle.setAttribute('r', this.radius);
     circle.setAttribute('fill', color);
     circle.setAttribute('stroke', POINT_STROKE_COLOR);
@@ -68,10 +63,10 @@ class Graphics {
   drawUnsatisfiedPair(point_a, point_b) {
     // draw lines
     const line = document.createElementNS(this.namespace, 'line');
-    line.setAttribute('x1', this.stepX * point_a.x);
-    line.setAttribute('y1', this.stepY * point_a.y);
-    line.setAttribute('x2', this.stepX * point_b.x);
-    line.setAttribute('y2', this.stepY * point_b.y);
+    line.setAttribute('x1', point_a.x * STEP);
+    line.setAttribute('y1', point_a.y * STEP);
+    line.setAttribute('x2', point_b.x * STEP);
+    line.setAttribute('y2', point_b.y * STEP);
     line.setAttribute('stroke', UNSATISFIED_POINT_COLOR);
     line.setAttribute('stroke-width', 5);
     line.setAttribute('stroke-dasharray', [15, 15]);
@@ -83,6 +78,9 @@ class Graphics {
   }
 
   draw() {
+    this.svg.setAttribute('viewBox',
+      `-1 -1 ${this.cols * STEP + 2} ${this.rows * STEP + 2}`);
+
     this.drawGrid();
 
     // draw the store's points as black

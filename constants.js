@@ -2,8 +2,6 @@
 export const STEP = 100;
 export const INITIAL_ROWS = 6;
 export const INITIAL_COLS = 10;
-export const CANVAS_WIDTH = INITIAL_COLS * STEP;
-export const CANVAS_HEIGHT = INITIAL_ROWS * STEP;
 
 // colors for grid elements
 export const GRID_BACKGROUND_COLOR = "#ffffff";
