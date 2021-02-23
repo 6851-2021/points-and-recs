@@ -28,9 +28,11 @@ class PointsAndRecs {
       return [Math.round(transformed.x / STEP), Math.round(transformed.y / STEP)];
     }
 
+    const equals =  (p1, p2) => p1[0] === p2[0] && p1[1] === p2[1];
+
     svg.addEventListener("mousemove", (e) => {
       const point = eventPoint(e);
-      if (!(this.graphics.mouse && this.graphics.mouse.equals(point))) {
+      if (!(this.graphics.mouse && equals(this.graphics.mouse, point))) {
         this.graphics.mouse = point;
         this.update();
       }
