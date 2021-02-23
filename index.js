@@ -18,20 +18,7 @@ class PointsAndRecs {
   update() {
     this.graphics.draw();
   }
-  updateLoop() {
-    this.update();
-    window.requestAnimationFrame(() => {
-      this.updateLoop();
-    });
-  }
-  startUpdateLoop() {
-    window.requestAnimationFrame(() => {
-      this.updateLoop();
-    });
-  }
   start() {
-    this.startUpdateLoop();
-
     const checkResult = document.getElementById("checkResult");
     const svg = this.graphics.svg;
 
@@ -42,27 +29,33 @@ class PointsAndRecs {
 
     svg.addEventListener("mousemove", (e) => {
       this.graphics.mouse = eventPoint(e);
+      this.update();
     });
     svg.addEventListener("mouseleave", (e) => {
       this.graphics.mouse = null;
+      this.update();
     });
 
     svg.addEventListener("click", (e) => {
       this.store.togglePoint(eventPoint(e));
       checkResult.innerHTML = this.store.checkResult;
+      this.update();
     });
 
     document.getElementById("superset").addEventListener("click", (e) => {
       this.store.computeSuperset();
       checkResult.innerHTML = this.store.checkResult;
+      this.update();
     });
     document.getElementById("check").addEventListener("click", (e) => {
       this.store.computeCheck();
       checkResult.innerHTML = this.store.checkResult;
+      this.update();
     });
     document.getElementById("clear").addEventListener("click", (e) => {
       this.store.clearPoints();
       checkResult.innerHTML = this.store.checkResult;
+      this.update();
     });
     document.getElementById("save").addEventListener("click", (e) => {
       this.store.savePoints(document.getElementById("filename").value);
