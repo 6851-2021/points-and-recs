@@ -1,5 +1,3 @@
-import { Point } from "../Point.js";
-
 // checks if points i and j are satisfied with one another 
 // per the given definition (some other point exists in their formed rect.)
 // TODO: optimize (a quadtree or kd tree would make this faster)

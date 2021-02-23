@@ -1,4 +1,3 @@
-import { Point } from "./Point.js";
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
 import { STEP, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
