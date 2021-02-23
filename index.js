@@ -56,6 +56,7 @@ class PointsAndRecs {
     document.getElementById("msuperset").addEventListener("click", (e) => {
       this.store.computeMSuperset();
       checkResult.innerHTML = this.store.checkResult;
+      this.update();
     });
     document.getElementById("check").addEventListener("click", (e) => {
       this.store.computeCheck();
