@@ -4,15 +4,15 @@ import { Graphics } from "./graphics.js";
 import { STEP, CANVAS_HEIGHT, CANVAS_WIDTH, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
 
 class PointsAndRecs {
-  constructor(canvasCtx, rows, cols, step) {
+  constructor(svg, rows, cols) {
     this.store = new Store();
-    this.step = step;
     this.graphics = new Graphics(
-      canvasCtx,
+      svg,
       CANVAS_WIDTH,
       CANVAS_HEIGHT,
       this.store,
-      this.step
+      rows,
+      cols
     );
   }
   update() {
@@ -97,7 +97,7 @@ function setup_svg(width, height) {
 
 function init(rows, cols) {
   const svg = setup_svg(CANVAS_WIDTH, CANVAS_HEIGHT);
-  const pointsAndRecs = new PointsAndRecs(svg, rows, cols, STEP);
+  const pointsAndRecs = new PointsAndRecs(svg, rows, cols);
   pointsAndRecs.start();
 }
 

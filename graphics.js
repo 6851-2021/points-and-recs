@@ -9,13 +9,16 @@ import {
 } from "./constants.js";
 
 class Graphics {
-  constructor(svg, width, height, store, step) {
+  constructor(svg, width, height, store, rows, cols) {
     this.svg = svg;
     this.store = store;
     this.prevFrameTime = performance.now();
+    
+    this.stepX = width / cols;
+    this.stepY = height / rows;
 
-    this.step = step;
-    this.radius = step / 4;
+    this.step = Math.min(this.stepX, this.stepY);
+    this.radius = this.step / 4;
     this.width = width;
     this.height = height;
     // track mouse position to allow hover
@@ -35,7 +38,7 @@ class Graphics {
     this.svg.appendChild(svgBackground);
 
     // draw columns
-    for (let x = 0; x <= this.width; x += this.step) {
+    for (let x = 0; x <= this.width; x += this.stepX) {
       const col = document.createElementNS(this.namespace, 'line');
       col.setAttribute('x1', x);
       col.setAttribute('y1', 0);
@@ -45,7 +48,7 @@ class Graphics {
       this.svg.appendChild(col);
     }
     // draw rows
-    for (let y = 0; y <= this.height; y += this.step) {
+    for (let y = 0; y <= this.height; y += this.stepY) {
       const row = document.createElementNS(this.namespace, 'line');
       row.setAttribute('x1', 0);
       row.setAttribute('y1', y);
@@ -57,7 +60,7 @@ class Graphics {
   }
 
   drawPoint(point, color) {
-    let [x, y] = [point.x * this.step, point.y * this.step];
+    let [x, y] = [point.x * this.stepX, point.y * this.stepY];
 
     const circle = document.createElementNS(this.namespace, 'circle');
     circle.setAttribute('cx', x);
@@ -71,10 +74,10 @@ class Graphics {
   drawUnsatisfiedPair(point_a, point_b) {
     // draw lines
     const line = document.createElementNS(this.namespace, 'line');
-    line.setAttribute('x1', this.step * point_a.x);
-    line.setAttribute('y1', this.step * point_a.y);
-    line.setAttribute('x2', this.step * point_b.x);
-    line.setAttribute('y2', this.step * point_b.y);
+    line.setAttribute('x1', this.stepX * point_a.x);
+    line.setAttribute('y1', this.stepY * point_a.y);
+    line.setAttribute('x2', this.stepX * point_b.x);
+    line.setAttribute('y2', this.stepY * point_b.y);
     line.setAttribute('stroke', UNSATISFIED_POINT_COLOR);
     line.setAttribute('stroke-width', 5);
     line.setAttribute('stroke-dasharray', [15, 15]);
