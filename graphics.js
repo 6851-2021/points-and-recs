@@ -31,15 +31,6 @@ class Graphics {
     // clear svg
     this.svg.innerHTML = "";
 
-    // draw background
-    const svgBackground = document.createElementNS(this.namespace, 'rect');
-    svgBackground.setAttribute('width', this.width);
-    svgBackground.setAttribute('height', this.height);
-    svgBackground.setAttribute('x', 0);
-    svgBackground.setAttribute('y', 0);
-    svgBackground.setAttribute('fill', GRID_BACKGROUND_COLOR);
-    this.svg.appendChild(svgBackground);
-
     // draw columns
     for (let x = 0; x <= this.width; x += this.stepX) {
       const col = document.createElementNS(this.namespace, 'line');

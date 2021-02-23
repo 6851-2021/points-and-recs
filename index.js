@@ -23,13 +23,21 @@ class PointsAndRecs {
     const svg = this.graphics.svg;
 
     function eventPoint(e) {
-      return new Point(Math.round(e.offsetX / STEP),
-                       Math.round(e.offsetY / STEP));
+      const matrix = svg.getCTM().inverse();
+      const pt = svg.createSVGPoint();
+      pt.x = e.offsetX;
+      pt.y = e.offsetY;
+      const transformed = pt.matrixTransform(matrix);
+      return new Point(Math.round(transformed.x / STEP),
+                       Math.round(transformed.y / STEP));
     }
 
     svg.addEventListener("mousemove", (e) => {
-      this.graphics.mouse = eventPoint(e);
-      this.update();
+      const point = eventPoint(e);
+      if (!(this.graphics.mouse && this.graphics.mouse.equals(point))) {
+        this.graphics.mouse = point;
+        this.update();
+      }
     });
     svg.addEventListener("mouseleave", (e) => {
       this.graphics.mouse = null;
@@ -83,8 +91,7 @@ class PointsAndRecs {
 
 function setup_svg(width, height) {
   const svg = document.getElementById("mainSVG");
-  svg.setAttribute('width', width.toString());
-  svg.setAttribute('height', height.toString());
+  svg.setAttribute('viewBox', `-1 -1 ${width+2} ${height+2}`);
   return svg;
 }
 
