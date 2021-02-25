@@ -59,6 +59,7 @@ class Store {
   }
 
   computeSuperset() {
+    this.addedPoints = [];
     NLogNAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
@@ -66,6 +67,7 @@ class Store {
   }
   
   computeMSuperset() {
+    this.addedPoints = [];
     FPTAlgo(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
