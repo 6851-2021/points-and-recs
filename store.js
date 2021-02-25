@@ -1,4 +1,3 @@
-import { NLogNAlgo } from "./algo/nlogn.js";
 import { getViolatingPoints } from "./algo/Check.js";
 import { Point } from "./Point.js";
 import { STEP } from "./constants.js";
@@ -57,13 +56,14 @@ class Store {
     this.computeCheck();
   }
 
-  computeSuperset() {
-    NLogNAlgo(this.points).forEach((point) =>
+  computeSuperset(algorithm) {
+    this.addedPoints = [];
+    algorithm(this.points).forEach((point) =>
       this.addedPoints.push(point.getCopy())
     );
     this.computeCheck();
   }
-
+  
   computeCheck() {
     let all_points = this.points.concat(this.addedPoints);
     this.violatingPoints = getViolatingPoints(all_points);

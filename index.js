@@ -1,6 +1,8 @@
 import { Point } from "./Point.js";
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
+import { NLogNAlgo } from "./algo/nlogn.js";
+import { FPTAlgo } from "./algo/fpt.js";
 import { STEP, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
 
 class PointsAndRecs {
@@ -48,8 +50,13 @@ class PointsAndRecs {
       this.update();
     });
 
-    document.getElementById("superset").addEventListener("click", (e) => {
-      this.store.computeSuperset();
+    document.getElementById("nlogsuperset").addEventListener("click", (e) => {
+      this.store.computeSuperset(NLogNAlgo);
+      checkResult.innerHTML = this.store.checkResult;
+      this.update();
+    });
+    document.getElementById("msuperset").addEventListener("click", (e) => {
+      this.store.computeSuperset(FPTAlgo);
       checkResult.innerHTML = this.store.checkResult;
       this.update();
     });
