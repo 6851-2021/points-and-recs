@@ -7,7 +7,18 @@ import { STEP, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
 
 class PointsAndRecs {
   constructor(svg, rows, cols) {
-    this.store = new Store();
+    let points = [];
+
+    if (document.location.hash && document.location.hash[0] === '#') {
+      points = document.location.hash.slice(1).split(';').map(p => {
+        const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
+        return m ? new Point(parseInt(m[1]), parseInt(m[2])) : null;
+      }).filter(p => p);
+    }
+
+    this.store = new Store(points);
+    this.store.computeCheck();
+
     this.graphics = new Graphics(
       svg,
       this.store,
@@ -17,9 +28,22 @@ class PointsAndRecs {
   }
   update() {
     this.graphics.draw();
+
+    // Update violating points message
+    let notifString = "";
+    if (this.store.violatingPoints.length === 0) {
+      notifString = "satisfied!";
+    } else {
+      const pairs = this.store.violatingPoints.map(a =>
+                      `( ${a[0].x}, ${a[0].y}) | (${a[1].x}, ${a[1].y})`
+                    );
+      notifString = "following pairs of points are violating: <br>" +
+                      pairs.join(" <br>");
+    }
+    const checkResult = document.getElementById("checkResult");
+    checkResult.innerHTML = notifString;
   }
   start() {
-    const checkResult = document.getElementById("checkResult");
     const svg = this.graphics.svg;
 
     function eventPoint(e) {
@@ -45,33 +69,43 @@ class PointsAndRecs {
     });
 
     svg.addEventListener("click", (e) => {
-      this.store.togglePoint(eventPoint(e));
-      checkResult.innerHTML = this.store.checkResult;
+      const type = document.getElementById("add-grid-point").checked
+        ? "GRID"
+        : "ADDED";
+      this.store.togglePoint(eventPoint(e), type);
+      document.location.hash = this.store.points.map(p => `(${p.x},${p.y})`).join(';');
       this.update();
     });
 
     document.getElementById("nlogsuperset").addEventListener("click", (e) => {
       this.store.computeSuperset(NLogNAlgo);
-      checkResult.innerHTML = this.store.checkResult;
       this.update();
     });
     document.getElementById("msuperset").addEventListener("click", (e) => {
       this.store.computeSuperset(FPTAlgo);
-      checkResult.innerHTML = this.store.checkResult;
       this.update();
     });
     document.getElementById("check").addEventListener("click", (e) => {
       this.store.computeCheck();
-      checkResult.innerHTML = this.store.checkResult;
       this.update();
     });
     document.getElementById("clear").addEventListener("click", (e) => {
       this.store.clearPoints();
-      checkResult.innerHTML = this.store.checkResult;
+      document.location.hash = "";
       this.update();
     });
-    document.getElementById("save").addEventListener("click", (e) => {
-      this.store.savePoints(document.getElementById("filename").value);
+    document.getElementById("save").addEventListener("click", (_e) => {
+      const dummyLink = document.createElement('a');
+      dummyLink.setAttribute('href', `data:application/json,${encodeURIComponent(JSON.stringify(this.store.points))}`);
+      dummyLink.setAttribute('download', document.getElementById("filename").value);
+
+      if (document.createEvent) {
+          var event = document.createEvent('MouseEvents');
+          event.initEvent('click', true, true);
+          dummyLink.dispatchEvent(event);
+      } else {
+          dummyLink.click();
+      }
     });
 
     const inputFile = document.getElementById("inputFile");
@@ -82,7 +116,7 @@ class PointsAndRecs {
         reader.onload = ()=>{
           this.store.clearPoints();
           for(const point of JSON.parse(reader.result)){
-            this.store.togglePoint(point);
+            this.store.togglePoint(point, "GRID");
           }
           document.getElementById("filename").value = file.name
         };
