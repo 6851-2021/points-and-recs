@@ -13,7 +13,6 @@ class Store {
     this.checkResult = "";
 
     if (document.location.hash && document.location.hash[0] === '#') {
-      this.points.clear();
       document.location.hash.slice(1).split(';').forEach(p => {
         const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
         if (m) {
@@ -77,6 +76,15 @@ class Store {
     this.violatingPoints = [];
     this.checkResult = "";
     document.location.hash = "";
+  }
+
+  clearAddedPoints() {
+    for (const point of Object.values(this.points)) {
+      if (point.type === pointType.ADDED) {
+        delete this.points[point.toString()];
+      }
+    }
+    this.computeCheck();
   }
 
   savePoints(filename){

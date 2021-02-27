@@ -64,6 +64,11 @@ class PointsAndRecs {
       checkResult.innerHTML = this.store.checkResult;
       this.update();
     });
+    document.getElementById("clear-satisfied").addEventListener("click", (e) => {
+      this.store.clearAddedPoints();
+      checkResult.innerHTML = this.store.checkResult;
+      this.update();
+    });
     document.getElementById("save").addEventListener("click", (e) => {
       this.store.savePoints(document.getElementById("filename").value);
     });
