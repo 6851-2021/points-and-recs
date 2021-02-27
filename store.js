@@ -1,25 +1,24 @@
 import { NLogNAlgo } from "./algo/nlogn.js";
 import { getViolatingPoints } from "./algo/Check.js";
 import { pointType } from "./constants.js";
-import PointMap from "./PointMap.js";
+import { Point } from "./Point.js";
 
 class Store {
 
   constructor() {
     // mapping of x,y coordinates to its type
-    this.points = new PointMap();
+    this.points = {};
     this.violatingPoints = [];
 
     this.checkResult = "";
 
     if (document.location.hash && document.location.hash[0] === '#') {
-      const type = pointType.GRID;
       this.points.clear();
       document.location.hash.slice(1).split(';').forEach(p => {
         const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
         if (m) {
-          const coor = [parseInt(m[1]), parseInt(m[2])];
-          this.points.set(coor, type);
+          const point = new Point(parseInt(m[1]), parseInt(m[2]), pointType.GRID);
+          this.points[point.toString()] = point;
         }
       });
       this.computeCheck();
@@ -29,31 +28,23 @@ class Store {
   togglePoint(point) {
     const addingGridPoint = document.getElementById("add-grid-point").checked;
     const type = addingGridPoint ? pointType.GRID : pointType.ADDED;
-    const existingPoint = this.points.get(point);
+    const existingPoint = this.points[point.toString()];
 
     // Remove/add from the mapping
     if (existingPoint) {
       // cannot overwrite a grid point with added point
-      if (!addingGridPoint && existingPoint === pointType.GRID) return;
-      this.points.delete(point);
+      if (!addingGridPoint && existingPoint.type === pointType.GRID) return;
+      delete this.points[existingPoint.toString()];
     } else {
-      this.points.set(point, type);
+      point.type = point.type || type;
+      this.points[point.toString()] = point;
     }
 
-    // clear added points when we add a new grid point
-    if (addingGridPoint) {
-      for (const [p, type] of [...this.points]) {
-        if (type === pointType.ADDED) {
-          this.points.delete(p);
-        };
-      }
-    };
     this.violatingPoints = [];
     // Hash only grid points
-    document.location.hash = this.points
-      .entries()
-      .filter(([_, type]) => type === pointType.GRID)
-      .map(([p, _]) => `(${p[0]},${p[1]})`)
+    document.location.hash = Object.values(this.points)
+      .filter((p) => p.type === pointType.GRID)
+      .map((p) => `(${p.x},${p.y})`)
       .join(';');
 
     // check violations interactively
@@ -61,20 +52,20 @@ class Store {
   }
 
   computeSuperset() {
-    NLogNAlgo(this.points.keys()).forEach((point) =>
-      this.points.set(point, pointType.ADDED)
+    NLogNAlgo(Object.values(this.points)).forEach((point) =>
+      this.points[point.toString()] = point
     );
     this.computeCheck();
   }
 
   computeCheck() {
-    this.violatingPoints = getViolatingPoints(this.points.keys());
+    this.violatingPoints = getViolatingPoints(Object.values(this.points));
     let notif_string;
     if (this.violatingPoints.length === 0) {
       notif_string = "satisfied!";
     } else {
       let string_arr = this.violatingPoints.map(([p1, p2]) =>
-                       "(" + p1[0] + ", " + p1[1] + ") | (" + p2[0] + ", " + p2[1] + ")");
+                       "(" + p1.x + ", " + p1.y + ") | (" + p2.x + ", " + p2.y + ")");
       notif_string = "following pairs of points are violating: <br>" +
                       string_arr.join(" <br>");
     }
@@ -82,7 +73,7 @@ class Store {
   }
 
   clearPoints() {
-    this.points.clear();
+    this.points = {};
     this.violatingPoints = [];
     this.checkResult = "";
     document.location.hash = "";

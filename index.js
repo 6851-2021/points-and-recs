@@ -1,6 +1,7 @@
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
-import { STEP, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
+import { STEP, INITIAL_COLS, INITIAL_ROWS, pointType } from "./constants.js";
+import { Point } from "./Point.js";
 
 class PointsAndRecs {
   constructor(svg, rows, cols) {
@@ -25,14 +26,14 @@ class PointsAndRecs {
       pt.x = e.offsetX;
       pt.y = e.offsetY;
       const transformed = pt.matrixTransform(matrix);
-      return [Math.round(transformed.x / STEP), Math.round(transformed.y / STEP)];
+      return new Point(
+        Math.round(transformed.x / STEP), Math.round(transformed.y / STEP)
+      );
     }
-
-    const equals =  (p1, p2) => p1[0] === p2[0] && p1[1] === p2[1];
 
     svg.addEventListener("mousemove", (e) => {
       const point = eventPoint(e);
-      if (!(this.graphics.mouse && equals(this.graphics.mouse, point))) {
+      if (!(this.graphics.mouse && this.graphics.mouse.equals(point))) {
         this.graphics.mouse = point;
         this.update();
       }
@@ -75,7 +76,7 @@ class PointsAndRecs {
         reader.onload = ()=>{
           this.store.clearPoints();
           for(const point of JSON.parse(reader.result)){
-            this.store.togglePoint([point.x, point.y]);
+            this.store.togglePoint(new Point(point.x, point.y, pointType.GRID));
           }
           document.getElementById("filename").value = file.name
         };

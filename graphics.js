@@ -75,33 +75,30 @@ class Graphics {
   }
 
   drawPoint(point, color) {
-    const [x, y] = point;
     const circle = document.createElementNS(this.namespace, 'circle');
-    circle.setAttribute('cx', x * STEP);
-    circle.setAttribute('cy', y * STEP);
+    circle.setAttribute('cx', point.x * STEP);
+    circle.setAttribute('cy', point.y * STEP);
     circle.setAttribute('r', this.radius);
     circle.setAttribute('fill', color);
     circle.setAttribute('stroke', POINT_STROKE_COLOR);
     this.pointGroup.appendChild(circle);
   }
 
-  drawUnsatisfiedPair(point_a, point_b) {
-    const [x1, y1] = point_a;
-    const [x2, y2] = point_b;
+  drawUnsatisfiedPair(p1, p2) {
     // draw lines
     const line = document.createElementNS(this.namespace, 'line');
-    line.setAttribute('x1', x1 * STEP);
-    line.setAttribute('y1', y1 * STEP);
-    line.setAttribute('x2', x2 * STEP);
-    line.setAttribute('y2', y2 * STEP);
+    line.setAttribute('x1', p1.x * STEP);
+    line.setAttribute('y1', p1.y * STEP);
+    line.setAttribute('x2', p2.x * STEP);
+    line.setAttribute('y2', p2.y * STEP);
     line.setAttribute('stroke', UNSATISFIED_POINT_COLOR);
     line.setAttribute('stroke-width', 5);
     line.setAttribute('stroke-dasharray', [15, 15]);
     this.unsatGroup.appendChild(line);
 
     // draw points
-    this.drawPoint(point_a, UNSATISFIED_POINT_COLOR);
-    this.drawPoint(point_b, UNSATISFIED_POINT_COLOR);
+    this.drawPoint(p1, UNSATISFIED_POINT_COLOR);
+    this.drawPoint(p2, UNSATISFIED_POINT_COLOR);
   }
 
   draw() {
@@ -111,8 +108,8 @@ class Graphics {
     this.unsatGroup.innerHTML = "";
 
     // draw the store's points as black
-    for (const [point, type] of this.store.points) {
-      const color = type === pointType.GRID
+    for (const point of Object.values(this.store.points)) {
+      const color = point.type === pointType.GRID
         ? GRID_POINT_COLOR
         : ADDED_POINT_COLOR;
       this.drawPoint(point, color);
