@@ -63,6 +63,32 @@ class Store {
     this.addedPoints = [];
     this.violatingPoints = [];
   }
+
+  toJsonString() {
+    return JSON.stringify(this.store.points);
+  }
+
+  /**
+   * Returns hash representation of list of points
+   */
+  hash() {
+    return this.points.map(p => `(${p.x},${p.y})`).join(';');
+  }
+
+  /**
+   * Parse hashed list of points
+   *
+   * @param {String} hashedPoints list of points formatted using `Store.hash`
+   */
+  static unhash(hashedPoints) {
+    return hashedPoints
+      .split(';')
+      .map((p) => {
+        const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
+        return m ? new Point(parseInt(m[1]), parseInt(m[2])) : null;
+      })
+      .filter(p => p);
+  }
 }
 
 export { Store };

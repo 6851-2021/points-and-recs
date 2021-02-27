@@ -10,12 +10,8 @@ class PointsAndRecs {
     let points = [];
 
     if (document.location.hash && document.location.hash[0] === '#') {
-      points = document.location.hash.slice(1).split(';').map(p => {
-        const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
-        return m ? new Point(parseInt(m[1]), parseInt(m[2])) : null;
-      }).filter(p => p);
+      points = Store.unhash(document.location.hash.slice(1));
     }
-
     this.store = new Store(points);
     this.store.computeCheck();
 
@@ -73,7 +69,7 @@ class PointsAndRecs {
         ? "GRID"
         : "ADDED";
       this.store.togglePoint(eventPoint(e), type);
-      document.location.hash = this.store.points.map(p => `(${p.x},${p.y})`).join(';');
+      document.location.hash = this.store.hash();
       this.update();
     });
 
@@ -96,7 +92,7 @@ class PointsAndRecs {
     });
     document.getElementById("save").addEventListener("click", (_e) => {
       const dummyLink = document.createElement('a');
-      dummyLink.setAttribute('href', `data:application/json,${encodeURIComponent(JSON.stringify(this.store.points))}`);
+      dummyLink.setAttribute('href', `data:application/json,${encodeURIComponent(this.store.toJsonString())}`);
       dummyLink.setAttribute('download', document.getElementById("filename").value);
 
       if (document.createEvent) {
