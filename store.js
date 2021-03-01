@@ -64,8 +64,8 @@ class Store {
       notif_string = "satisfied!";
     } else {
       let string_arr = this.violatingPoints.map(([p1, p2]) =>
-                       "(" + p1.x + ", " + p1.y + ") | (" + p2.x + ", " + p2.y + ")");
-      notif_string = "following pairs of points are violating: <br>" +
+                       `(${p1.x}, ${p1.y}) | (${p2.x}, ${p2.y})`);
+      notif_string = "Violating pairs of points: <br>" +
                       string_arr.join(" <br>");
     }
     this.checkResult = notif_string;
