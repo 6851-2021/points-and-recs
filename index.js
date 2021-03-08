@@ -43,10 +43,10 @@ class PointsAndRecs {
     const svg = this.graphics.svg;
 
     function eventPoint(e) {
-      const matrix = svg.getCTM().inverse();
+      const matrix = svg.getScreenCTM().inverse();
       const pt = svg.createSVGPoint();
-      pt.x = e.offsetX;
-      pt.y = e.offsetY;
+      pt.x = e.pageX;
+      pt.y = e.pageY;
       const transformed = pt.matrixTransform(matrix);
       return new Point(Math.round(transformed.x / STEP),
                        Math.round(transformed.y / STEP));
