@@ -1,11 +1,20 @@
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
+import { NLogNAlgo } from "./algo/nlogn.js";
+import { FPTAlgo } from "./algo/fpt.js";
 import { STEP, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
 import { Point } from "./Point.js";
 
 class PointsAndRecs {
   constructor(svg, rows, cols) {
-    this.store = new Store();
+    let points = {};
+
+    if (document.location.hash && document.location.hash[0] === '#') {
+      points = Store.unhash(document.location.hash.slice(1));
+    }
+    this.store = new Store(points);
+    this.store.computeCheck();
+
     this.graphics = new Graphics(
       svg,
       this.store,
@@ -15,19 +24,35 @@ class PointsAndRecs {
   }
   update() {
     this.graphics.draw();
+
+    // Update violating points message
+    let notifString = "";
+    if (this.store.violatingPoints.length === 0) {
+      notifString = "satisfied!";
+    } else {
+      const pairs = this.store.violatingPoints.map(a =>
+                      `( ${a[0].x}, ${a[0].y}) | (${a[1].x}, ${a[1].y})`
+                    );
+      notifString = "following pairs of points are violating: <br>" +
+                      pairs.join(" <br>");
+    }
+    const checkResult = document.getElementById("checkResult");
+    checkResult.innerHTML = notifString;
   }
   start() {
-    const checkResult = document.getElementById("checkResult");
     const svg = this.graphics.svg;
 
     function eventPoint(e) {
-      const matrix = svg.getCTM().inverse();
+      const type = document.getElementById("add-grid-point").checked
+        ? Point.GRID
+        : Point.ADDED;
+      const matrix = svg.getScreenCTM().inverse();
       const pt = svg.createSVGPoint();
-      pt.x = e.offsetX;
-      pt.y = e.offsetY;
+      pt.x = e.pageX;
+      pt.y = e.pageY;
       const transformed = pt.matrixTransform(matrix);
       return new Point(
-        Math.round(transformed.x / STEP), Math.round(transformed.y / STEP)
+        Math.round(transformed.x / STEP), Math.round(transformed.y / STEP), type
       );
     }
 
@@ -44,33 +69,45 @@ class PointsAndRecs {
     });
 
     svg.addEventListener("click", (e) => {
+
       this.store.togglePoint(eventPoint(e));
-      checkResult.innerHTML = this.store.checkResult;
+      document.location.hash = this.store.hash();
       this.update();
     });
 
-    document.getElementById("superset").addEventListener("click", (e) => {
-      this.store.computeSuperset();
-      checkResult.innerHTML = this.store.checkResult;
+    document.getElementById("nlogsuperset").addEventListener("click", (e) => {
+      this.store.computeSuperset(NLogNAlgo);
+      this.update();
+    });
+    document.getElementById("msuperset").addEventListener("click", (e) => {
+      this.store.computeSuperset(FPTAlgo);
       this.update();
     });
     document.getElementById("check").addEventListener("click", (e) => {
       this.store.computeCheck();
-      checkResult.innerHTML = this.store.checkResult;
       this.update();
     });
     document.getElementById("clear").addEventListener("click", (e) => {
       this.store.clearPoints();
-      checkResult.innerHTML = this.store.checkResult;
+      document.location.hash = "";
       this.update();
     });
     document.getElementById("clear-satisfied").addEventListener("click", (e) => {
       this.store.clearAddedPoints();
-      checkResult.innerHTML = this.store.checkResult;
       this.update();
     });
-    document.getElementById("save").addEventListener("click", (e) => {
-      this.store.savePoints(document.getElementById("filename").value);
+    document.getElementById("save").addEventListener("click", (_e) => {
+      const dummyLink = document.createElement('a');
+      dummyLink.setAttribute('href', `data:application/json,${encodeURIComponent(this.store.toJsonString())}`);
+      dummyLink.setAttribute('download', document.getElementById("filename").value);
+
+      if (document.createEvent) {
+          var event = document.createEvent('MouseEvents');
+          event.initEvent('click', true, true);
+          dummyLink.dispatchEvent(event);
+      } else {
+          dummyLink.click();
+      }
     });
 
     const inputFile = document.getElementById("inputFile");

@@ -1,80 +1,46 @@
-import { NLogNAlgo } from "./algo/nlogn.js";
 import { getViolatingPoints } from "./algo/Check.js";
 import { Point } from "./Point.js";
 
 class Store {
 
-  constructor() {
+  constructor(points) {
     // mapping of x,y coordinates to its type
-    this.points = {};
+    this.points = points || {};
     this.violatingPoints = [];
-
-    this.checkResult = "";
-
-    if (document.location.hash && document.location.hash[0] === '#') {
-      document.location.hash.slice(1).split(';').forEach(p => {
-        const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
-        if (m) {
-          const point = new Point(parseInt(m[1]), parseInt(m[2]), Point.GRID);
-          this.points[point.toString()] = point;
-        }
-      });
-      this.computeCheck();
-    }
   }
 
   togglePoint(point) {
-    const addingGridPoint = document.getElementById("add-grid-point").checked;
-    const type = addingGridPoint ? Point.GRID : Point.ADDED;
     const existingPoint = this.points[point.toString()];
 
     // Remove/add from the mapping
     if (existingPoint) {
       // cannot overwrite a grid point with added point
-      if (!addingGridPoint && existingPoint.type === Point.GRID) return;
+      if (point.type === Point.ADDED && existingPoint.type === Point.GRID) return;
       delete this.points[existingPoint.toString()];
     } else {
-      point.type = point.type || type;
       this.points[point.toString()] = point;
     }
 
     this.violatingPoints = [];
-    // Hash only grid points
-    document.location.hash = Object.values(this.points)
-      .filter((p) => p.type === Point.GRID)
-      .map((p) => `(${p.x},${p.y})`)
-      .join(';');
-
     // check violations interactively
     this.computeCheck();
   }
 
-  computeSuperset() {
-    NLogNAlgo(Object.values(this.points)).forEach((point) =>
+  computeSuperset(algorithm) {
+    algorithm(Object.values(this.points)).forEach((point) =>
       this.points[point.toString()] = point
     );
     this.computeCheck();
   }
-
+  
   computeCheck() {
     this.violatingPoints = getViolatingPoints(Object.values(this.points));
-    let notif_string;
-    if (this.violatingPoints.length === 0) {
-      notif_string = "satisfied!";
-    } else {
-      let string_arr = this.violatingPoints.map(([p1, p2]) =>
-                       `(${p1.x}, ${p1.y}) | (${p2.x}, ${p2.y})`);
-      notif_string = "Violating pairs of points: <br>" +
-                      string_arr.join(" <br>");
-    }
-    this.checkResult = notif_string;
+    return this.violatingPoints;
   }
 
   clearPoints() {
     this.points = {};
     this.violatingPoints = [];
-    this.checkResult = "";
-    document.location.hash = "";
   }
 
   clearAddedPoints() {
@@ -86,21 +52,36 @@ class Store {
     this.computeCheck();
   }
 
-  savePoints(filename){
-    var dummyLink = document.createElement('a');
-    dummyLink.setAttribute('href', 'data:application/json,' + encodeURIComponent(JSON.stringify(this.points)));
-    dummyLink.setAttribute('download', filename);
-    console.log(dummyLink)
-    if (document.createEvent) {
-        var event = document.createEvent('MouseEvents');
-        event.initEvent('click', true, true);
-        dummyLink.dispatchEvent(event);
-    }
-    else {
-        dummyLink.click();
-    }
+  toJsonString() {
+    return JSON.stringify(this.points);
   }
 
+  /**
+   * Returns hash representation of list of points
+   */
+  hash() {
+    return Object.values(this.points)
+      .filter(p => p.type === Point.GRID)
+      .map(p => `(${p.x},${p.y})`).join(';');
+  }
+
+  /**
+   * Parse hashed list of points
+   *
+   * @param {String} hashedPoints list of points formatted using `Store.hash`
+   */
+  static unhash(hashedPoints) {
+    return hashedPoints
+      .split(';')
+      .reduce((points, p) => {
+        const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
+        if (m) {
+          const point = new Point(parseInt(m[1]), parseInt(m[2]), Point.GRID);
+          points[point.toString()] = point;
+        }
+        return points;
+      }, {});
+  }
 }
 
 export { Store };
