@@ -1,5 +1,3 @@
-import { Point } from "../Point.js";
-
 // checks if points i and j are satisfied with one another 
 // per the given definition (some other point exists in their formed rect.)
 // TODO: optimize (a quadtree or kd tree would make this faster)
@@ -10,8 +8,7 @@ export function checkPairSatisfied(i, j, points) {
   let hi_y = Math.max(points[i].y, points[j].y);
   for (let k = 0; k < points.length; ++k) {
     if ((i != k) && (j != k)) {
-      let [x, y] = [points[k].x, points[k].y];
-      if ((lo_x <= x) && (x <= hi_x) && (lo_y <= y) && (y <= hi_y)) {
+      if ((lo_x <= points[k].x) && (points[k].x <= hi_x) && (lo_y <= points[k].y) && (points[k].y <= hi_y)) {
         return true;
       }
     }

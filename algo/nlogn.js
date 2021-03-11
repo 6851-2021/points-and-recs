@@ -8,6 +8,7 @@ function NLogNAlgo(points) {
     points.sort((a, b) => a.x === b.x ? a.y - b.y : a.x - b.x);
     return dnc(points)[1];
 }
+
 // Returns [unique sorted y coordinates, points to add]
 function dnc(points) {
     // Empty list
@@ -39,7 +40,7 @@ function dnc(points) {
         // Skip over points with the same y to avoid duplicates
         if (pl < pr && points[pl].y === newY) ++pl;
         // Otherwise we should add this point
-        else r.push(new Point(points[p].x, newY));
+        else r.push(new Point(points[p].x, newY, Point.ADDED));
         y.push(newY);
         lastY = newY;
     }

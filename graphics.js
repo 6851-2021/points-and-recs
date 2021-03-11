@@ -1,4 +1,3 @@
-import { Point } from "./Point.js";
 import {
   GRID_BACKGROUND_COLOR,
   GRID_STROKE_COLOR,
@@ -8,6 +7,7 @@ import {
   ADDED_POINT_COLOR,
   STEP,
 } from "./constants.js";
+import { Point } from "./Point.js";
 
 class Graphics {
   constructor(svg, store, rows, cols) {
@@ -84,21 +84,21 @@ class Graphics {
     this.pointGroup.appendChild(circle);
   }
 
-  drawUnsatisfiedPair(point_a, point_b) {
+  drawUnsatisfiedPair(p1, p2) {
     // draw lines
     const line = document.createElementNS(this.namespace, 'line');
-    line.setAttribute('x1', point_a.x * STEP);
-    line.setAttribute('y1', point_a.y * STEP);
-    line.setAttribute('x2', point_b.x * STEP);
-    line.setAttribute('y2', point_b.y * STEP);
+    line.setAttribute('x1', p1.x * STEP);
+    line.setAttribute('y1', p1.y * STEP);
+    line.setAttribute('x2', p2.x * STEP);
+    line.setAttribute('y2', p2.y * STEP);
     line.setAttribute('stroke', UNSATISFIED_POINT_COLOR);
     line.setAttribute('stroke-width', 5);
     line.setAttribute('stroke-dasharray', [15, 15]);
     this.unsatGroup.appendChild(line);
 
     // draw points
-    this.drawPoint(point_a, UNSATISFIED_POINT_COLOR);
-    this.drawPoint(point_b, UNSATISFIED_POINT_COLOR);
+    this.drawPoint(p1, UNSATISFIED_POINT_COLOR);
+    this.drawPoint(p2, UNSATISFIED_POINT_COLOR);
   }
 
   draw() {
@@ -108,13 +108,11 @@ class Graphics {
     this.unsatGroup.innerHTML = "";
 
     // draw the store's points as black
-    for (const point of this.store.points) {
-      this.drawPoint(point, GRID_POINT_COLOR);
-    }
-
-    // draw the additional points as green
-    for (const point of this.store.addedPoints) {
-      this.drawPoint(point, ADDED_POINT_COLOR);
+    for (const point of Object.values(this.store.points)) {
+      const color = point.type === Point.GRID
+        ? GRID_POINT_COLOR
+        : ADDED_POINT_COLOR;
+      this.drawPoint(point, color);
     }
 
     // draw the violating points as pairs of colors

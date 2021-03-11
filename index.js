@@ -1,13 +1,13 @@
-import { Point } from "./Point.js";
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
 import { NLogNAlgo } from "./algo/nlogn.js";
 import { FPTAlgo } from "./algo/fpt.js";
 import { STEP, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
+import { Point } from "./Point.js";
 
 class PointsAndRecs {
   constructor(svg, rows, cols) {
-    let points = [];
+    let points = {};
 
     if (document.location.hash && document.location.hash[0] === '#') {
       points = Store.unhash(document.location.hash.slice(1));
@@ -43,18 +43,22 @@ class PointsAndRecs {
     const svg = this.graphics.svg;
 
     function eventPoint(e) {
+      const type = document.getElementById("add-grid-point").checked
+        ? Point.GRID
+        : Point.ADDED;
       const matrix = svg.getScreenCTM().inverse();
       const pt = svg.createSVGPoint();
       pt.x = e.pageX;
       pt.y = e.pageY;
       const transformed = pt.matrixTransform(matrix);
-      return new Point(Math.round(transformed.x / STEP),
-                       Math.round(transformed.y / STEP));
+      return new Point(
+        Math.round(transformed.x / STEP), Math.round(transformed.y / STEP), type
+      );
     }
 
     svg.addEventListener("mousemove", (e) => {
       const point = eventPoint(e);
-      if (!(this.graphics.mouse && this.graphics.mouse.equals(point))) {
+      if (!(this.graphics.mouse && this.graphics.mouse.isCollocated(point))) {
         this.graphics.mouse = point;
         this.update();
       }
@@ -65,10 +69,8 @@ class PointsAndRecs {
     });
 
     svg.addEventListener("click", (e) => {
-      const type = document.getElementById("add-grid-point").checked
-        ? "GRID"
-        : "ADDED";
-      this.store.togglePoint(eventPoint(e), type);
+
+      this.store.togglePoint(eventPoint(e));
       document.location.hash = this.store.hash();
       this.update();
     });
@@ -88,6 +90,10 @@ class PointsAndRecs {
     document.getElementById("clear").addEventListener("click", (e) => {
       this.store.clearPoints();
       document.location.hash = "";
+      this.update();
+    });
+    document.getElementById("clear-satisfied").addEventListener("click", (e) => {
+      this.store.clearAddedPoints();
       this.update();
     });
     document.getElementById("save").addEventListener("click", (_e) => {
@@ -112,7 +118,7 @@ class PointsAndRecs {
         reader.onload = ()=>{
           this.store.clearPoints();
           for(const point of JSON.parse(reader.result)){
-            this.store.togglePoint(point, "GRID");
+            this.store.togglePoint(new Point(point.x, point.y, Point.GRID));
           }
           document.getElementById("filename").value = file.name
         };

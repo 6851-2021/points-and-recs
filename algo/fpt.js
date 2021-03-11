@@ -61,7 +61,7 @@ function FPTAlgo_x(points) {
                         if(state[xi]<x_pos) {invalid=true; break;}
                     }
                     if(!invalid)
-                        next_f.push([cur_xs.concat([xid]),state,has_x?points:(points.concat([new Point(x,y)]))]);
+                        next_f.push([cur_xs.concat([xid]),state,has_x?points:(points.concat([new Point(x,y, Point.ADDED)]))]);
                 }
             }
             cur_f=next_f;
@@ -95,9 +95,9 @@ function FPTAlgo(points) {
     if(new Set(all_x).size<new Set(all_y).size) return FPTAlgo_x(points);
     // swap x and y
     let points_rev=[];
-    for(let pt of points) points_rev.push(new Point(pt.y,pt.x));
+    for(let pt of points) points_rev.push(new Point(pt.y,pt.x,Point.ADDED));
     let result_rev=FPTAlgo_x(points_rev),result=[];
-    for(let pt of result_rev) result.push(new Point(pt.y,pt.x));
+    for(let pt of result_rev) result.push(new Point(pt.y,pt.x,Point.ADDED));
     return result;
 }
 
