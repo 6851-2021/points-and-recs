@@ -27,6 +27,7 @@ class Store {
   }
 
   computeSuperset(algorithm) {
+    this.clearAddedPoints();
     algorithm(Object.values(this.points)).forEach((point) =>
       this.points[point.toString()] = point
     );
