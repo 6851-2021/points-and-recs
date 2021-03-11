@@ -11,9 +11,3 @@ export const POINT_STROKE_COLOR = "#000000";
 export const UNSATISFIED_POINT_COLOR = "#800000";
 export const GRID_POINT_COLOR = "#888888";
 export const ADDED_POINT_COLOR = "#00ff00";
-
-// "enums"
-export const pointType = {
-    GRID: "GRID",
-    ADDED: "ADDED",
-};

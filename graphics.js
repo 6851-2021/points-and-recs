@@ -6,8 +6,8 @@ import {
   GRID_POINT_COLOR,
   ADDED_POINT_COLOR,
   STEP,
-  pointType,
 } from "./constants.js";
+import { Point } from "./Point.js";
 
 class Graphics {
   constructor(svg, store, rows, cols) {
@@ -109,7 +109,7 @@ class Graphics {
 
     // draw the store's points as black
     for (const point of Object.values(this.store.points)) {
-      const color = point.type === pointType.GRID
+      const color = point.type === Point.GRID
         ? GRID_POINT_COLOR
         : ADDED_POINT_COLOR;
       this.drawPoint(point, color);

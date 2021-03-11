@@ -1,4 +1,6 @@
 class Point {
+  static GRID = "GRID";
+  static ADDED = "ADDED";
 
   constructor(xcoor, ycoor, type) {
     this.x = xcoor;
@@ -6,7 +8,7 @@ class Point {
     this.type = type;
   }
 
-  equals(other) {
+  isCollocated(other) {
     return (this.x === other.x) && (this.y === other.y);
   }
 
@@ -15,7 +17,7 @@ class Point {
   }
 
   copy() {
-    return new Point(this.x, this.y);
+    return new Point(this.x, this.y, this.type);
   }
 
   toString() {

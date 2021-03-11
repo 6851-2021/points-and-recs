@@ -1,5 +1,4 @@
 import { Point } from "../Point.js";
-import { pointType } from "../constants.js";
 
 // points is a list of unique Points
 // Returns a list of points to add
@@ -41,7 +40,7 @@ function dnc(points) {
         // Skip over points with the same y to avoid duplicates
         if (pl < pr && points[pl].y === newY) ++pl;
         // Otherwise we should add this point
-        else r.push(new Point(points[p].x, newY, pointType.ADDED));
+        else r.push(new Point(points[p].x, newY, Point.ADDED));
         y.push(newY);
         lastY = newY;
     }

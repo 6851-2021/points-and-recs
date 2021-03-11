@@ -1,6 +1,5 @@
 import { NLogNAlgo } from "./algo/nlogn.js";
 import { getViolatingPoints } from "./algo/Check.js";
-import { pointType } from "./constants.js";
 import { Point } from "./Point.js";
 
 class Store {
@@ -16,7 +15,7 @@ class Store {
       document.location.hash.slice(1).split(';').forEach(p => {
         const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
         if (m) {
-          const point = new Point(parseInt(m[1]), parseInt(m[2]), pointType.GRID);
+          const point = new Point(parseInt(m[1]), parseInt(m[2]), Point.GRID);
           this.points[point.toString()] = point;
         }
       });
@@ -26,13 +25,13 @@ class Store {
 
   togglePoint(point) {
     const addingGridPoint = document.getElementById("add-grid-point").checked;
-    const type = addingGridPoint ? pointType.GRID : pointType.ADDED;
+    const type = addingGridPoint ? Point.GRID : Point.ADDED;
     const existingPoint = this.points[point.toString()];
 
     // Remove/add from the mapping
     if (existingPoint) {
       // cannot overwrite a grid point with added point
-      if (!addingGridPoint && existingPoint.type === pointType.GRID) return;
+      if (!addingGridPoint && existingPoint.type === Point.GRID) return;
       delete this.points[existingPoint.toString()];
     } else {
       point.type = point.type || type;
@@ -42,7 +41,7 @@ class Store {
     this.violatingPoints = [];
     // Hash only grid points
     document.location.hash = Object.values(this.points)
-      .filter((p) => p.type === pointType.GRID)
+      .filter((p) => p.type === Point.GRID)
       .map((p) => `(${p.x},${p.y})`)
       .join(';');
 
@@ -80,7 +79,7 @@ class Store {
 
   clearAddedPoints() {
     for (const point of Object.values(this.points)) {
-      if (point.type === pointType.ADDED) {
+      if (point.type === Point.ADDED) {
         delete this.points[point.toString()];
       }
     }
