@@ -2,7 +2,9 @@ import {
   GRID_BACKGROUND_COLOR,
   GRID_STROKE_COLOR,
   POINT_STROKE_COLOR,
-  UNSATISFIED_POINT_COLOR,
+  UNSATISFIED_LINE_COLOR,
+  UNSATISFIED_GRID_POINT_COLOR,
+  UNSATISFIED_ADDED_POINT_COLOR,
   GRID_POINT_COLOR,
   ADDED_POINT_COLOR,
   STEP,
@@ -91,14 +93,18 @@ class Graphics {
     line.setAttribute('y1', p1.y * STEP);
     line.setAttribute('x2', p2.x * STEP);
     line.setAttribute('y2', p2.y * STEP);
-    line.setAttribute('stroke', UNSATISFIED_POINT_COLOR);
+    line.setAttribute('stroke', UNSATISFIED_LINE_COLOR);
     line.setAttribute('stroke-width', 5);
     line.setAttribute('stroke-dasharray', [15, 15]);
     this.unsatGroup.appendChild(line);
 
     // draw points
-    this.drawPoint(p1, UNSATISFIED_POINT_COLOR);
-    this.drawPoint(p2, UNSATISFIED_POINT_COLOR);
+    for (const point of [p1,p2]) {
+      const color = point.type === Point.GRID
+        ? UNSATISFIED_GRID_POINT_COLOR
+        : UNSATISFIED_ADDED_POINT_COLOR;
+      this.drawPoint(point, color);
+    }
   }
 
   draw() {
