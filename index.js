@@ -155,7 +155,20 @@ function init(rows, cols) {
 
   document.getElementById("update").addEventListener("click", (e) => {
     e.preventDefault();
-    updateGrid()
+    updateGrid();
+  });
+  
+  document.getElementById("adjust").addEventListener("click", (e) => {
+    e.preventDefault();
+    let newRows = INITIAL_ROWS; //Math.abs(parseInt(document.getElementById("rows").value));
+    let newCols = INITIAL_COLS; //Math.abs(parseInt(document.getElementById("cols").value));
+    for(const p of Object.values(pointsAndRecs.store.points)) {
+      newRows = Math.max(newRows, p.y + 1);
+      newCols = Math.max(newCols, p.x + 1);
+    }
+    document.getElementById("rows").value = newRows;
+    document.getElementById("cols").value = newCols;
+    pointsAndRecs.graphics.resize(newRows, newCols);
   });
 
   function updateGrid() {
