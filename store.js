@@ -62,8 +62,8 @@ class Store {
    */
   hash() {
     return Object.values(this.points)
-      .filter(p => p.type === Point.GRID)
-      .map(p => `(${p.x},${p.y})`).join(';');
+//      .filter(p => p.type === Point.GRID)
+      .map(p => `(${p.x},${p.y}${(p.type==Point.GRID)?"":",1"})`).join(';');
   }
 
   /**
@@ -75,9 +75,12 @@ class Store {
     return hashedPoints
       .split(';')
       .reduce((points, p) => {
-        const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)\)/);
+        const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)(,\s*(-?[\d]+))?\)/);
         if (m) {
-          const point = new Point(parseInt(m[1]), parseInt(m[2]), Point.GRID);
+          console.log(m);
+          let type = Point.GRID;
+          if (m[4]=="1") type = Point.ADDED;
+          const point = new Point(parseInt(m[1]), parseInt(m[2]), type);
           points[point.toString()] = point;
         }
         return points;

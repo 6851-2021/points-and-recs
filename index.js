@@ -28,12 +28,17 @@ class PointsAndRecs {
     // Update violating points message
     let notifString = "";
     if (this.store.violatingPoints.length === 0) {
-      notifString = "satisfied!";
+      let num_point=0,num_extra=0;
+      for(const p of Object.values(this.store.points)) {
+        if (p.type==Point.GRID) ++num_point;
+        else ++num_extra;
+      }
+      notifString = "Satisfied! ("+num_point+" points, "+num_extra+" extra)";
     } else {
       const pairs = this.store.violatingPoints.map(a =>
-                      `( ${a[0].x}, ${a[0].y}) | (${a[1].x}, ${a[1].y})`
+                      `&nbsp;(${a[0].x}, ${a[0].y}) | (${a[1].x}, ${a[1].y})`
                     );
-      notifString = "following pairs of points are violating: <br>" +
+      notifString = "The following "+pairs.length+" pairs of points are violating: <br>" +
                       pairs.join(" <br>");
     }
     const checkResult = document.getElementById("checkResult");
@@ -69,7 +74,6 @@ class PointsAndRecs {
     });
 
     svg.addEventListener("click", (e) => {
-
       this.store.togglePoint(eventPoint(e));
       document.location.hash = this.store.hash();
       this.update();
@@ -117,8 +121,10 @@ class PointsAndRecs {
         const reader = new FileReader();
         reader.onload = ()=>{
           this.store.clearPoints();
-          for(const point of JSON.parse(reader.result)){
-            this.store.togglePoint(new Point(point.x, point.y, Point.GRID));
+          const result = JSON.parse(reader.result);
+          for(const point of Object.values(result)) {
+            const type = (point.type=='GRID')?(Point.GRID):(Point.ADDED);
+            this.store.togglePoint(new Point(point.x, point.y, type));
           }
           document.getElementById("filename").value = file.name
         };
