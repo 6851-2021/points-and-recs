@@ -68,6 +68,7 @@ class PointsAndRecs {
         this.update();
       }
     });
+    
     svg.addEventListener("mouseleave", (e) => {
       this.graphics.mouse = null;
       this.update();
@@ -94,6 +95,7 @@ class PointsAndRecs {
       document.getElementById("add-extra-point").classList.toggle("btn-outline-primary");
       document.getElementById("add-extra-point").classList.toggle("btn-outline-secondary");
     });
+
     document.getElementById("nlogsuperset").addEventListener("click", (e) => {
       this.store.computeSuperset(NLogNAlgo);
       document.location.hash = this.store.hash();
@@ -114,6 +116,37 @@ class PointsAndRecs {
       document.location.hash = this.store.hash();
       this.update();
     });
+
+    function manipulate_points(target, f) {
+      const nxt = Object.values(target.store.points).map(f);
+      let minx = 0, miny = 0;
+      if (nxt.length) {
+        minx = nxt[0].x, miny = nxt[0].y;
+        for(const point of nxt) {
+          minx = Math.min(minx, point.x);
+          miny = Math.min(miny, point.y);
+        }
+      }
+      target.store.clearPoints();
+      for (const point of nxt)
+        target.store.togglePoint(new Point(point.x-minx+1, point.y-miny+1, point.type));
+      document.location.hash = target.store.hash();
+      target.update();
+      document.getElementById("adjust").click();
+    }
+    document.getElementById("rotate-left").addEventListener("click", (e) => {
+      manipulate_points(this,p=>new Point(p.y,-p.x,p.type));
+    });
+    document.getElementById("rotate-right").addEventListener("click", (e) => {
+      manipulate_points(this,p=>new Point(-p.y,p.x,p.type));
+    });
+    document.getElementById("flip-horizontal").addEventListener("click", (e) => {
+      manipulate_points(this,p=>new Point(p.x,-p.y,p.type));
+    });
+    document.getElementById("flip-vertical").addEventListener("click", (e) => {
+      manipulate_points(this,p=>new Point(-p.x,p.y,p.type));
+    });
+
     document.getElementById("save").addEventListener("click", (_e) => {
       const dummyLink = document.createElement('a');
       dummyLink.setAttribute('href', `data:application/json,${encodeURIComponent(this.store.toJsonString())}`);
