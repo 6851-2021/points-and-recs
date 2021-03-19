@@ -193,8 +193,8 @@ function init(rows, cols) {
   
   document.getElementById("adjust").addEventListener("click", (e) => {
     e.preventDefault();
-    let newRows = INITIAL_ROWS; //Math.abs(parseInt(document.getElementById("rows").value));
-    let newCols = INITIAL_COLS; //Math.abs(parseInt(document.getElementById("cols").value));
+    let newRows = Math.max(INITIAL_ROWS,Math.abs(parseInt(document.getElementById("rows").value)));
+    let newCols = Math.max(INITIAL_COLS,Math.abs(parseInt(document.getElementById("cols").value)));
     for(const p of Object.values(pointsAndRecs.store.points)) {
       newRows = Math.max(newRows, p.y + 1);
       newCols = Math.max(newCols, p.x + 1);
