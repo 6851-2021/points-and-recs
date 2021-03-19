@@ -16,50 +16,50 @@
     <div id="wrapper" class="container-xxl">
       <form id="resize" onclick="javascript:return false;">
         <div class="row p-1">
-        <div class="col-md-1">
-        <label for="rows" class="col-form-label">Rows:</label>
-      </div>
-      <div class="col-md-3">
-        <input type="number" id="rows" name="rows" value="6" class="form-control">
+          <div class="col-md-1">
+            <label for="rows" class="col-form-label">Rows:</label>
+          </div>
+          <div class="col-md-3">
+            <input type="number" id="rows" name="rows" value="6" class="form-control">
+          </div>
+          <div class="col-md-1">
+            <label for="cols" class="col-form-label">Columns:</label>
+          </div>
+          <div class="col-md-3">
+            <input type="number" id="cols" name="cols" value="10" class="form-control">
+          </div>
+          <div class="col-md-4" align="right">
+            <button type="submit" id="update" class="btn btn-primary">Update</button>
+          </div>
         </div>
-        <div class="col-md-1">
-        <label for="cols" class="col-form-label">Columns:</label>
-      </div>
-        <div class="col-md-3">
-        <input type="number" id="cols" name="cols" value="10" class="form-control">
-        </div>
-        <div class="col-md-4" align="right">
-        <button type="submit" id="update" class="btn btn-primary">Update</button>
-        </div>
-      </div>
-    </form>
+      </form>
       <div class="row p-1">
         <div class="col-md-9">
-      <button id="nlogsuperset" class="btn btn-primary"><i>O</i>(<i>n</i> log <i>n</i>) superset</button>
-      <button id="msuperset" class="btn btn-primary">optimal superset</button>
-      <button id="clear-satisfied" class="btn btn-warning">clear extra points</button>
-      <button id="clear" class="btn btn-warning">clear all points</button>
-    </div>
-    <div class="col-md-3" align="right">
-      <div class="btn-group" role="group">
-        <button type="button" class="btn btn-outline-primary" id="add-grid-point">Grid point</button>
-        <button type="button" class="btn btn-outline-secondary" id="add-extra-point">Extra point</button>
-      </div>
+          <button id="nlogsuperset" class="btn btn-primary"><i>O</i>(<i>n</i> log <i>n</i>) superset</button>
+          <button id="msuperset" class="btn btn-primary">optimal superset</button>
+          <button id="clear-satisfied" class="btn btn-warning">clear extra points</button>
+          <button id="clear" class="btn btn-warning">clear all points</button>
         </div>
-    </div>
+        <div class="col-md-3" align="right">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary" id="add-grid-point">Grid point</button>
+            <button type="button" class="btn btn-outline-secondary" id="add-extra-point">Extra point</button>
+          </div>
+        </div>
+      </div>
       <svg id="mainSVG" xmlns="http://www.w3.org/2000/svg"></svg>
       <div class="row p-1">
         <div class="col-md-6">
           <label for="inputFile">Load JSON:</label> &nbsp;
           <input type="file" id="inputFile" accept="application/JSON">
+        </div>
+        <div class="col-md-6" align="right">
+          <span>
+            <button id="save">Save</button>
+            <input type="text" size="30" id="filename" value="points.json"></input>
+          </span>
+        </div>
       </div>
-      <div class="col-md-6" align="right">
-      <span>
-        <button id="save">Save</button>
-        <input type="text" size="30" id="filename" value="points.json"></input>
-      </span>
-    </div>
-    </div>
       <p id="checkResult"></p>
     </div>
     <script type="module" src="index.js"></script>
