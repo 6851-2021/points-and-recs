@@ -53,8 +53,8 @@ class PointsAndRecs {
         : Point.ADDED;
       const matrix = svg.getScreenCTM().inverse();
       const pt = svg.createSVGPoint();
-      pt.x = e.pageX;
-      pt.y = e.pageY;
+      pt.x = e.pageX - window.scrollX;
+      pt.y = e.pageY - window.scrollY;
       const transformed = pt.matrixTransform(matrix);
       return new Point(
         Math.round(transformed.x / STEP), Math.round(transformed.y / STEP), type
