@@ -110,6 +110,7 @@ class Graphics {
   draw() {
     // Draw everything except grid; drawGrid() is called by resize()
 
+
     this.pointGroup.innerHTML = "";
     this.unsatGroup.innerHTML = "";
 
@@ -128,7 +129,7 @@ class Graphics {
     }    
 
     // draw the hovered point at a lower opacity
-    const color = document.getElementById("add-grid-point").checked
+    const color = document.getElementById("add-grid-point").classList.contains("btn-outline-primary")
       ? GRID_POINT_COLOR
       : ADDED_POINT_COLOR;
     if (this.mouse)

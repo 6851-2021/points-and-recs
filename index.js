@@ -48,7 +48,7 @@ class PointsAndRecs {
     const svg = this.graphics.svg;
 
     function eventPoint(e) {
-      const type = document.getElementById("add-grid-point").checked
+      const type = document.getElementById("add-grid-point").classList.contains("btn-outline-primary")
         ? Point.GRID
         : Point.ADDED;
       const matrix = svg.getScreenCTM().inverse();
@@ -78,17 +78,30 @@ class PointsAndRecs {
       document.location.hash = this.store.hash();
       this.update();
     });
-
+    
+    document.getElementById("add-grid-point").addEventListener("click", (e) => {
+      if(document.getElementById("add-grid-point").classList.contains("btn-outline-primary")) return;
+      document.getElementById("add-grid-point").classList.toggle("btn-outline-primary");
+      document.getElementById("add-grid-point").classList.toggle("btn-outline-secondary");
+      document.getElementById("add-extra-point").classList.toggle("btn-outline-primary");
+      document.getElementById("add-extra-point").classList.toggle("btn-outline-secondary");
+    });
+    
+    document.getElementById("add-extra-point").addEventListener("click", (e) => {
+      if(!document.getElementById("add-grid-point").classList.contains("btn-outline-primary")) return;
+      document.getElementById("add-grid-point").classList.toggle("btn-outline-primary");
+      document.getElementById("add-grid-point").classList.toggle("btn-outline-secondary");
+      document.getElementById("add-extra-point").classList.toggle("btn-outline-primary");
+      document.getElementById("add-extra-point").classList.toggle("btn-outline-secondary");
+    });
     document.getElementById("nlogsuperset").addEventListener("click", (e) => {
       this.store.computeSuperset(NLogNAlgo);
+      document.location.hash = this.store.hash();
       this.update();
     });
     document.getElementById("msuperset").addEventListener("click", (e) => {
       this.store.computeSuperset(FPTAlgo);
-      this.update();
-    });
-    document.getElementById("check").addEventListener("click", (e) => {
-      this.store.computeCheck();
+      document.location.hash = this.store.hash();
       this.update();
     });
     document.getElementById("clear").addEventListener("click", (e) => {
@@ -98,6 +111,7 @@ class PointsAndRecs {
     });
     document.getElementById("clear-satisfied").addEventListener("click", (e) => {
       this.store.clearAddedPoints();
+      document.location.hash = this.store.hash();
       this.update();
     });
     document.getElementById("save").addEventListener("click", (_e) => {

@@ -3,81 +3,63 @@
   <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <style>
-      body {
-        background-color: #eeeeee;
-        align-items: center;
-        display: flex;
-        justify-content: center;
-      }
-      canvas {
-        text-align: center;
-      }
-      #save {
-        float: right;
-      }
-      #filename {
-        float: right;
-      }
-      #inputFile {
-        float: right;
-      }
-      #mainSVG {
-        cursor: pointer;
-        background: white;
-        width: 100%;
-      }
-      #rows, #cols {
-        width: 4em;
-      }
-      .input-group {
-        display: inline-block;
-      }
+  .btn:focus,.btn:active {
+    outline: none;
+    box-shadow: none;
+  }
     </style>
   </head>
 
   <body>
-    <div id="wrapper">
-      <form id="resize">
-        <label for="rows">Rows:</label>
-        <input type="number" id="rows" name="rows" value="6">
-        <label for="cols">Columns:</label>
-        <input type="number" id="cols" name="cols" value="10">
-        <button type="submit" id="update">Update Grid</button>
-      </form>
-      <button id="nlogsuperset"><i>O</i>(<i>n</i> log <i>n</i>) superset</button>
-      <button id="msuperset">optimal superset</button>
-      <button id="check">check satisfaction</button>
-      <button id="clear-satisfied">clear satisfied set</button>
-      <button id="clear">clear all points</button>
-      <div class="input-group">
-        <input
-          type="radio"
-          id="add-grid-point"
-          name="point-type"
-          value="grid-point"
-          checked
-        />
-        <label for="add-grid-point">construct grid points</label>
+    <div id="wrapper" class="container-xxl">
+      <form id="resize" onclick="javascript:return false;">
+        <div class="row p-1">
+        <div class="col-md-1">
+        <label for="rows" class="col-form-label">Rows:</label>
       </div>
-      <div class="input-group">
-        <input
-          type="radio"
-          id="add-satisfied-set"
-          name="point-type"
-          value="satisfied-set"
-        />
-        <label for="add-satisfied-set">construct satisfied set</label>
+      <div class="col-md-3">
+        <input type="number" id="rows" name="rows" value="6" class="form-control">
+        </div>
+        <div class="col-md-1">
+        <label for="cols" class="col-form-label">Columns:</label>
       </div>
-      <div class="input-group">
-        <label for="inputFile">Load JSON:</label> &nbsp;
-        <input type="file" id="inputFile" accept="application/JSON">
+        <div class="col-md-3">
+        <input type="number" id="cols" name="cols" value="10" class="form-control">
+        </div>
+        <div class="col-md-4" align="right">
+        <button type="submit" id="update" class="btn btn-primary">Update</button>
+        </div>
       </div>
+    </form>
+      <div class="row p-1">
+        <div class="col-md-9">
+      <button id="nlogsuperset" class="btn btn-primary"><i>O</i>(<i>n</i> log <i>n</i>) superset</button>
+      <button id="msuperset" class="btn btn-primary">optimal superset</button>
+      <button id="clear-satisfied" class="btn btn-warning">clear extra points</button>
+      <button id="clear" class="btn btn-warning">clear all points</button>
+    </div>
+    <div class="col-md-3" align="right">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-primary" id="add-grid-point">Grid point</button>
+        <button type="button" class="btn btn-outline-secondary" id="add-extra-point">Extra point</button>
+      </div>
+        </div>
+    </div>
       <svg id="mainSVG" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="row p-1">
+        <div class="col-md-6">
+          <label for="inputFile">Load JSON:</label> &nbsp;
+          <input type="file" id="inputFile" accept="application/JSON">
+      </div>
+      <div class="col-md-6" align="right">
       <span>
         <button id="save">Save</button>
         <input type="text" size="30" id="filename" value="points.json"></input>
       </span>
+    </div>
+    </div>
       <p id="checkResult"></p>
     </div>
     <script type="module" src="index.js"></script>
