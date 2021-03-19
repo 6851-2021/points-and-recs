@@ -77,7 +77,6 @@ class Store {
       .reduce((points, p) => {
         const m = p.trim().match(/\((-?[\d]+),\s*(-?[\d]+)(,\s*(-?[\d]+))?\)/);
         if (m) {
-          console.log(m);
           let type = Point.GRID;
           if (m[4]=="1") type = Point.ADDED;
           const point = new Point(parseInt(m[1]), parseInt(m[2]), type);
