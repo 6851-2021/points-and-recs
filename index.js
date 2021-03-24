@@ -28,12 +28,17 @@ class PointsAndRecs {
     // Update violating points message
     let notifString = "";
     if (this.store.violatingPoints.length === 0) {
-      notifString = "satisfied!";
+      let num_point=0,num_extra=0;
+      for(const p of Object.values(this.store.points)) {
+        if (p.type==Point.GRID) ++num_point;
+        else ++num_extra;
+      }
+      notifString = "Satisfied! ("+num_point+" points, "+num_extra+" extra)";
     } else {
       const pairs = this.store.violatingPoints.map(a =>
-                      `( ${a[0].x}, ${a[0].y}) | (${a[1].x}, ${a[1].y})`
+                      `&nbsp;(${a[0].x}, ${a[0].y}) | (${a[1].x}, ${a[1].y})`
                     );
-      notifString = "following pairs of points are violating: <br>" +
+      notifString = "The following "+pairs.length+" pairs of points are violating: <br>" +
                       pairs.join(" <br>");
     }
     const checkResult = document.getElementById("checkResult");
@@ -43,13 +48,13 @@ class PointsAndRecs {
     const svg = this.graphics.svg;
 
     function eventPoint(e) {
-      const type = document.getElementById("add-grid-point").checked
+      const type = document.getElementById("add-grid-point").classList.contains("btn-outline-primary")
         ? Point.GRID
         : Point.ADDED;
       const matrix = svg.getScreenCTM().inverse();
       const pt = svg.createSVGPoint();
-      pt.x = e.pageX;
-      pt.y = e.pageY;
+      pt.x = e.pageX - window.scrollX;
+      pt.y = e.pageY - window.scrollY;
       const transformed = pt.matrixTransform(matrix);
       return new Point(
         Math.round(transformed.x / STEP), Math.round(transformed.y / STEP), type
@@ -63,28 +68,42 @@ class PointsAndRecs {
         this.update();
       }
     });
+    
     svg.addEventListener("mouseleave", (e) => {
       this.graphics.mouse = null;
       this.update();
     });
 
     svg.addEventListener("click", (e) => {
-
       this.store.togglePoint(eventPoint(e));
       document.location.hash = this.store.hash();
       this.update();
     });
+    
+    document.getElementById("add-grid-point").addEventListener("click", (e) => {
+      if(document.getElementById("add-grid-point").classList.contains("btn-outline-primary")) return;
+      document.getElementById("add-grid-point").classList.toggle("btn-outline-primary");
+      document.getElementById("add-grid-point").classList.toggle("btn-outline-secondary");
+      document.getElementById("add-extra-point").classList.toggle("btn-outline-primary");
+      document.getElementById("add-extra-point").classList.toggle("btn-outline-secondary");
+    });
+    
+    document.getElementById("add-extra-point").addEventListener("click", (e) => {
+      if(!document.getElementById("add-grid-point").classList.contains("btn-outline-primary")) return;
+      document.getElementById("add-grid-point").classList.toggle("btn-outline-primary");
+      document.getElementById("add-grid-point").classList.toggle("btn-outline-secondary");
+      document.getElementById("add-extra-point").classList.toggle("btn-outline-primary");
+      document.getElementById("add-extra-point").classList.toggle("btn-outline-secondary");
+    });
 
     document.getElementById("nlogsuperset").addEventListener("click", (e) => {
       this.store.computeSuperset(NLogNAlgo);
+      document.location.hash = this.store.hash();
       this.update();
     });
     document.getElementById("msuperset").addEventListener("click", (e) => {
       this.store.computeSuperset(FPTAlgo);
-      this.update();
-    });
-    document.getElementById("check").addEventListener("click", (e) => {
-      this.store.computeCheck();
+      document.location.hash = this.store.hash();
       this.update();
     });
     document.getElementById("clear").addEventListener("click", (e) => {
@@ -94,8 +113,40 @@ class PointsAndRecs {
     });
     document.getElementById("clear-satisfied").addEventListener("click", (e) => {
       this.store.clearAddedPoints();
+      document.location.hash = this.store.hash();
       this.update();
     });
+
+    function manipulate_points(target, f) {
+      const nxt = Object.values(target.store.points).map(f);
+      let minx = 0, miny = 0;
+      if (nxt.length) {
+        minx = nxt[0].x, miny = nxt[0].y;
+        for(const point of nxt) {
+          minx = Math.min(minx, point.x);
+          miny = Math.min(miny, point.y);
+        }
+      }
+      target.store.clearPoints();
+      for (const point of nxt)
+        target.store.togglePoint(new Point(point.x-minx+1, point.y-miny+1, point.type));
+      document.location.hash = target.store.hash();
+      target.update();
+      document.getElementById("adjust").click();
+    }
+    document.getElementById("rotate-left").addEventListener("click", (e) => {
+      manipulate_points(this,p=>new Point(p.y,-p.x,p.type));
+    });
+    document.getElementById("rotate-right").addEventListener("click", (e) => {
+      manipulate_points(this,p=>new Point(-p.y,p.x,p.type));
+    });
+    document.getElementById("flip-horizontal").addEventListener("click", (e) => {
+      manipulate_points(this,p=>new Point(p.x,-p.y,p.type));
+    });
+    document.getElementById("flip-vertical").addEventListener("click", (e) => {
+      manipulate_points(this,p=>new Point(-p.x,p.y,p.type));
+    });
+
     document.getElementById("save").addEventListener("click", (_e) => {
       const dummyLink = document.createElement('a');
       dummyLink.setAttribute('href', `data:application/json,${encodeURIComponent(this.store.toJsonString())}`);
@@ -117,8 +168,10 @@ class PointsAndRecs {
         const reader = new FileReader();
         reader.onload = ()=>{
           this.store.clearPoints();
-          for(const point of JSON.parse(reader.result)){
-            this.store.togglePoint(new Point(point.x, point.y, Point.GRID));
+          const result = JSON.parse(reader.result);
+          for(const point of Object.values(result)) {
+            const type = (point.type=='GRID')?(Point.GRID):(Point.ADDED);
+            this.store.togglePoint(new Point(point.x, point.y, type));
           }
           document.getElementById("filename").value = file.name
         };
@@ -135,7 +188,20 @@ function init(rows, cols) {
 
   document.getElementById("update").addEventListener("click", (e) => {
     e.preventDefault();
-    updateGrid()
+    updateGrid();
+  });
+  
+  document.getElementById("adjust").addEventListener("click", (e) => {
+    e.preventDefault();
+    let newRows = Math.max(INITIAL_ROWS,Math.abs(parseInt(document.getElementById("rows").value)));
+    let newCols = Math.max(INITIAL_COLS,Math.abs(parseInt(document.getElementById("cols").value)));
+    for(const p of Object.values(pointsAndRecs.store.points)) {
+      newRows = Math.max(newRows, p.y + 1);
+      newCols = Math.max(newCols, p.x + 1);
+    }
+    document.getElementById("rows").value = newRows;
+    document.getElementById("cols").value = newCols;
+    pointsAndRecs.graphics.resize(newRows, newCols);
   });
 
   function updateGrid() {
