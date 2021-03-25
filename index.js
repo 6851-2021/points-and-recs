@@ -173,7 +173,8 @@ class PointsAndRecs {
             const type = (point.type=='GRID')?(Point.GRID):(Point.ADDED);
             this.store.togglePoint(new Point(point.x, point.y, type));
           }
-          document.getElementById("filename").value = file.name
+          document.getElementById("adjust").click();
+          document.getElementById("filename").value = file.name;
         };
         reader.readAsText(file);
       }
@@ -190,9 +191,8 @@ function init(rows, cols) {
     e.preventDefault();
     updateGrid();
   });
-  
-  document.getElementById("adjust").addEventListener("click", (e) => {
-    e.preventDefault();
+
+  function auto_adjust() {
     let newRows = Math.max(INITIAL_ROWS,Math.abs(parseInt(document.getElementById("rows").value)));
     let newCols = Math.max(INITIAL_COLS,Math.abs(parseInt(document.getElementById("cols").value)));
     for(const p of Object.values(pointsAndRecs.store.points)) {
@@ -202,7 +202,10 @@ function init(rows, cols) {
     document.getElementById("rows").value = newRows;
     document.getElementById("cols").value = newCols;
     pointsAndRecs.graphics.resize(newRows, newCols);
-  });
+  };
+  
+  document.getElementById("adjust").addEventListener("click", (e) => {e.preventDefault(); auto_adjust();});
+  auto_adjust();
 
   function updateGrid() {
     const newRows = Math.abs(parseInt(document.getElementById("rows").value));
