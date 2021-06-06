@@ -1,20 +1,33 @@
-# points-and-recs
+# Geometric View of Binary Search Trees
+## (a.k.a. Points and Rectangles)
 
-https://6851-2021.github.io/points-and-recs/.
+An implementation/visualization of "[The Geometry of Binary Search
+Trees](http://erikdemaine.org/papers/BST_SODA2009/)" by Demaine, Harmon,
+Iacono, Kane, and Pǎtraşcu (2009).
 
-If you want to run this locally, you'll need to run a server. If you have Python 3 you can run `python3 -m http.server` in the root directory, then open `http://localhost:8000/` in a browser. 
+## [Web app](https://6851-2021.github.io/points-and-recs/)
 
-This is just the skeleton for now. `store.js` should have the logic for handling points while `graphics.js` should have the logic for drawing them. Graphics should be thought of as a state machine; the entire thing is redrawn every loop and should be based entirely on the state of `store`.
+You can [run the app](https://6851-2021.github.io/points-and-recs/)
+in your browser.
 
-The algorithm side should be mostly independent from the webapp side? Idk
+## Features
 
-Next steps for the web app side:
+* You can interactively add input points (accesses) and satisfaction points
+  (touches), and it will highlight unsatisfied rectangles.
+* There are two satisfaction algorithms implemented:
+  * *O*(*n* log *n*) divide-and-conquer solution
+  * Optimal solution by brute force, which performs well when there are
+    few columns (fixed-parameter tractable in number of columns).
 
-- ~~Add points on click~~ (done!)
-- ~~Remove points on, say, double click~~ (done)
-- ~~Add a tool to switch to a different set of points (for letting the user, say, construct the satisfied set)~~
+## Usage
 
-For the algorithms side:
+If you want to run this app locally, you'll need to run a server. If you have Python 3 you can run `python3 -m http.server` in the root directory, then open `http://localhost:8000/` in a browser. 
 
-- ~~Write up an algorithm for determining if a set of points is satisfied, and if not, give an offending pair of points?~~ (offending pairs listed)
-- ~~Write up an algorithm for finding a satisfied superset of points~~ (done!)
+## Overview
+
+* `index.js` contains the top-level app logic.
+* `store.js` contains the logic for handling point sets.
+* `graphics.js` contains the logic for drawing them.
+* `algo` directory contains the point set satisfaction algorithms.
+
+Graphics should be thought of as a state machine; everything is redrawn every loop and should be based entirely on the state of `store`.
