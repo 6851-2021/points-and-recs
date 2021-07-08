@@ -1,6 +1,7 @@
 import { Store } from "./store.js";
 import { Graphics } from "./graphics.js";
 import { NLogNAlgo } from "./algo/nlogn.js";
+import { deferralAlgo } from "./algo/deferral.js";
 import { FPTAlgo } from "./algo/fpt.js";
 import { STEP, INITIAL_COLS, INITIAL_ROWS } from "./constants.js";
 import { Point } from "./Point.js";
@@ -98,6 +99,11 @@ class PointsAndRecs {
 
     document.getElementById("nlogsuperset").addEventListener("click", (e) => {
       this.store.computeSuperset(NLogNAlgo);
+      document.location.hash = this.store.hash();
+      this.update();
+    });
+    document.getElementById("deferralsuperset").addEventListener("click", (e) => {
+      this.store.computeSuperset(deferralAlgo);
       document.location.hash = this.store.hash();
       this.update();
     });
